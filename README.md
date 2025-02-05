@@ -2,7 +2,7 @@
 
 A beautiful and feature-rich music player application built with Flutter. Play your favorite tunes stored locally on your device with an intuitive and sleek user interface.
 
-![Music Player Banner](assets/screenshot/bannar.jpeg) <!-- Add your own screenshots here -->
+![Music Player Banner](assets/screenshot/bannar.JPEG) <!-- Add your own screenshots here -->
 
 ## Features 🚀
 
