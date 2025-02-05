@@ -8,7 +8,7 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:theme_provider/theme_provider.dart';
 import 'package:yt_clone/music_player/ui/home_screen_main.dart';
 
-import 'music_player/notification/background_player.dart';
+// import 'music_player/notification/background_player.dart';
 
 late AudioHandler _audioHandler;
 Future<void> main() async {
