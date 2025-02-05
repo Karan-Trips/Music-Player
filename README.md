@@ -2,7 +2,7 @@
 
 A beautiful and feature-rich music player application built with Flutter. Play your favorite tunes stored locally on your device with an intuitive and sleek user interface.
 
-![Music Player Banner](screenshots/banner.png) <!-- Add your own screenshots here -->
+![Music Player Banner](assets/screenshot/bannar.jpeg) <!-- Add your own screenshots here -->
 
 ## Features 🚀
 
@@ -21,4 +21,4 @@ A beautiful and feature-rich music player application built with Flutter. Play y
 1. **Prerequisites**: Ensure Flutter SDK is installed on your machine.
 2. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/music-player-flutter.git
+   git clone https://github.com/Karan-Trips/Music-Player
