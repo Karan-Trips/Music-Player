@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yt_clone/music_player/ui/detail_view.dart';
+import 'package:yt_clone/music_player/ui/yt_screen.dart';
 
-import '../getx_file/yt_search.dart';
+import '../getx_file/yt/yt_search.dart';
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});
@@ -43,10 +44,8 @@ class SearchScreen extends StatelessWidget {
 
             return ListTile(
               onTap: () {
-                Get.to(() => DetailPlayer(
-                      index: index,
-                      isYt: true,
-                    ));
+                var id = searchController2.searchResults[index].videoId;
+                Get.to(() => YoutubeScreenOnline(id: id));
               },
               title: Text(
                 song.name,

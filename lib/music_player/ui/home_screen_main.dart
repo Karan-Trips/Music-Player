@@ -44,7 +44,7 @@ class _MusicHomeScreenState extends State<MusicHomeScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              Get.to(() => SearchScreen());
+              Get.to(() => const SearchScreen());
             },
             icon: Icon(
               Icons.search,

@@ -7,7 +7,6 @@ import 'package:music_visualizer/music_visualizer.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 import 'package:yt_clone/music_player/getx_file/fetch_songs.dart';
-import 'package:yt_clone/music_player/getx_file/yt_search.dart';
 
 import 'package:yt_clone/music_player/widgets/export.dart';
 import 'package:volume_controller/volume_controller.dart';
@@ -44,11 +43,11 @@ class _DetailPlayerState extends State<DetailPlayer> {
     });
 
     if (!widget.isFromBottomPlayer) {
-      Future.delayed(const Duration(milliseconds: 100), () {
-        songPlayerController.indexPlaying.value = widget.index;
-        songPlayerController
-            .playSong(songPlayerController.songList[widget.index].uri);
-      });
+      songPlayerController.indexPlaying.value = widget.index;
+
+      songPlayerController.playSong(
+        songPlayerController.songList[widget.index].uri,
+      );
     }
   }
 
@@ -151,58 +150,46 @@ class _DetailPlayerState extends State<DetailPlayer> {
         body: SafeArea(
           child: Obx(() {
             int currentIndex = songPlayerController.indexPlaying.value;
-            var thumbnail =
-                searchController2.searchResults[currentIndex].thumbnails[0].url;
-            var id =
-                searchController2.searchResults[currentIndex].album!.albumId;
 
-            print("id------>$id");
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-                    child: widget.isYt
-                        ? Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15.r),
-                                image: DecorationImage(
-                                  image: NetworkImage(thumbnail),
-                                  fit: BoxFit.cover,
-                                )),
-                          )
-                        : QueryArtworkWidget(
-                            artworkFit: BoxFit.contain,
-                            artworkHeight: 240.h,
-                            artworkWidth: 1.sw,
-                            artworkQuality: FilterQuality.high,
-                            artworkBorder: BorderRadius.circular(15.r),
-                            id: songPlayerController.songList[currentIndex].id,
-                            type: ArtworkType.AUDIO,
-                            nullArtworkWidget: Container(
-                              height: 240.h,
-                              width: 1.sw,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(colors: [
-                                  Get.isDarkMode
-                                      ? const Color.fromARGB(255, 108, 118, 212)
-                                      : const Color.fromARGB(
-                                          121, 124, 121, 121),
-                                  Get.isDarkMode
-                                      ? const Color.fromARGB(255, 171, 171, 175)
-                                      : const Color.fromARGB(238, 172, 142, 142)
-                                ]),
-                                borderRadius: BorderRadius.circular(15.r),
-                              ),
-                              child: MusicVisualizer(
-                                curve: Curves.easeInCubic,
-                                barCount: 50,
-                                colors: colors,
-                                duration: duration,
-                              ),
-                            ),
-                          )),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                  child: QueryArtworkWidget(
+                    artworkFit: BoxFit.contain,
+                    artworkHeight: 240.h,
+                    artworkWidth: 1.sw,
+                    artworkQuality: FilterQuality.high,
+                    artworkBorder: BorderRadius.circular(15.r),
+                    id: songPlayerController.songList[currentIndex].id,
+                    type: ArtworkType.AUDIO,
+                    nullArtworkWidget: Container(
+                      height: 240.h,
+                      width: 1.sw,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Get.isDarkMode
+                                ? const Color.fromARGB(255, 108, 118, 212)
+                                : const Color.fromARGB(121, 124, 121, 121),
+                            Get.isDarkMode
+                                ? const Color.fromARGB(255, 171, 171, 175)
+                                : const Color.fromARGB(238, 172, 142, 142)
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(15.r),
+                      ),
+                      child: MusicVisualizer(
+                        curve: Curves.easeInCubic,
+                        barCount: 50,
+                        colors: colors,
+                        duration: duration,
+                      ),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 20),
                 SizedBox(
                   height: 30.h,

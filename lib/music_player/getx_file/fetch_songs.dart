@@ -152,8 +152,7 @@ class SongPlayerController extends GetxController {
     try {
       await audioPlayer.setAudioSource(AudioSource.uri(Uri.parse(uri)));
 
-      // Manually retrieve duration
-      Duration? duration = await audioPlayer.duration;
+      Duration? duration = audioPlayer.duration;
       if (duration != null) {
         totalDuration.value = duration;
         print("Updated Total Duration: $duration");
@@ -170,7 +169,7 @@ class SongPlayerController extends GetxController {
     }
   }
 
-  /// **⏸ Pause the song**
+
   Future<void> pauseSong() async {
     try {
       await audioPlayer.pause();
@@ -182,7 +181,7 @@ class SongPlayerController extends GetxController {
     }
   }
 
-  /// **▶ Resume the song**
+
   Future<void> resumeSong() async {
     try {
       if (pausedPosition != null) {
@@ -199,7 +198,7 @@ class SongPlayerController extends GetxController {
     }
   }
 
-  /// **🔂 Toggle repeat mode**
+
   Future<void> repeatSong() async {
     inRepeat.value = !inRepeat.value;
     await audioPlayer.setLoopMode(inRepeat.value ? LoopMode.one : LoopMode.off);
@@ -213,5 +212,5 @@ class SongPlayerController extends GetxController {
   }
 }
 
-/// **🔥 Initialize `SongPlayerController` globally**
+
 SongPlayerController songPlayerController = Get.put(SongPlayerController());

@@ -1,7 +1,7 @@
 import 'package:dart_ytmusic_api/types.dart';
 import 'package:get/get.dart';
 
-import '../widgets/yt_music_service.dart';
+import '../../widgets/yt_music_service.dart';
 
 class SearchController extends GetxController {
   var isLoading = false.obs;
@@ -24,6 +24,7 @@ class SearchController extends GetxController {
       isLoading.value = false;
     }
   }
+  
 }
 
 final SearchController searchController2 = Get.put(SearchController());

@@ -42,7 +42,7 @@ class HomeScreenPlayer extends StatelessWidget {
                     child: ListTile(
                       onTap: () {
                         songPlayerController.indexPlaying.value = index;
-
+                        print("index=====_---$index");
                         Get.to(() => DetailPlayer(index: index));
                       },
                       title: Text(
