@@ -1,16 +1,26 @@
 import 'package:get/get.dart';
+import 'package:yt_clone/music_player/hive/app_db.dart';
 
-class NavigationController extends GetxController {
-  var selectedIndex = 0.obs;
-  RxBool isLiked = false.obs;
+class NavController extends GetxController {
+  var likedSongs = <int>[].obs;
 
-  void changeIndex(int index) {
-    selectedIndex.value = index;
+  @override
+  void onInit() {
+    super.onInit();
+    likedSongs.assignAll(appDB.likedSongs);
   }
 
-  void toggelLike(int index) {
-    isLiked.value = !isLiked.value;
+  void toggelLike(int songId) {
+    if (likedSongs.contains(songId)) {
+      likedSongs.remove(songId);
+      appDB.unlikeSong(songId);
+    } else {
+      likedSongs.add(songId);
+      appDB.likeSong(songId);
+    }
   }
+
+  bool isLiked(int songId) => likedSongs.contains(songId);
 }
 
-final NavigationController navController = Get.put(NavigationController());
+final navController = Get.put(NavController());

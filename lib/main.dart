@@ -1,16 +1,22 @@
 // ignore_for_file: unused_element
 
+import 'package:dart_ytmusic_api/yt_music.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:theme_provider/theme_provider.dart';
-import 'package:volume_controller/volume_controller.dart';
 
 import 'package:yt_clone/music_player/ui/home_screen_main.dart';
+import 'package:yt_clone/music_player/widgets/yt_music_service.dart';
+
+import 'music_player/hive/app_db.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await AppDB.init();
+  Get.put(AppDB());
+  await ytMusicService.initialize();
   // TODO:Under Develpment
   // await AudioService.init(
   //   builder: () => AudioPlayerHandler(),

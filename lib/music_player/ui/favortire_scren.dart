@@ -3,43 +3,36 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:yt_clone/music_player/getx_file/fetch_songs.dart';
 import 'package:yt_clone/music_player/ui/detail_view.dart';
 
-import '../getx_file/fetch_songs.dart';
+import '../getx_file/ui_getx_change.dart';
 
-class HomeScreenPlayer extends StatelessWidget {
-  const HomeScreenPlayer({super.key});
+class FavoriteSongsPage extends StatelessWidget {
+  const FavoriteSongsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          ListView.builder(
-            padding: EdgeInsets.only(bottom: 80.h),
-            shrinkWrap: true,
-            itemCount: songPlayerController.songList.length,
-            itemBuilder: (context, index) {
-              var data = songPlayerController.songList[index];
-              return Obx(() {
-                bool isPlaying = songPlayerController.isPlaying.value &&
-                    songPlayerController.indexPlaying.value == index;
-
-                return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10.w),
-                  child: Container(
-                    margin: EdgeInsets.only(bottom: 8.h),
-                    decoration: BoxDecoration(
-                      color: index % 2 == 0
-                          ? Get.isDarkMode
-                              ? const Color.fromRGBO(30, 33, 58, 1)
-                              : const Color.fromARGB(255, 243, 213, 213)
-                          : Get.isDarkMode
-                              ? const Color.fromARGB(255, 12, 17, 43)
-                              : const Color.fromARGB(255, 211, 214, 242),
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                    child: ListTile(
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.search,
+            ),
+          ),
+        ],
+      ),
+      body: Obx(() {
+        return navController.likedSongs.isNotEmpty
+            ? ListView.builder(
+                itemCount: navController.likedSongs.length,
+                itemBuilder: (context, index) {
+                  var data = songPlayerController.songList[index];
+                  int songId = navController.likedSongs[index];
+                  return ListTile(
                       onTap: () {
                         songPlayerController.indexPlaying.value = index;
 
@@ -84,28 +77,20 @@ class HomeScreenPlayer extends StatelessWidget {
                         ),
                       ),
                       trailing: IconButton(
-                        icon: Icon(
-                          isPlaying ? Icons.pause : Icons.play_arrow,
-                          color: isPlaying ? Colors.red : Colors.white,
-                        ),
+                        icon: const Icon(Icons.favorite, color: Colors.pink),
                         onPressed: () {
-                          if (isPlaying) {
-                            songPlayerController.pauseSong();
-                          } else {
-                            songPlayerController.indexPlaying.value = index;
-
-                            songPlayerController.playSong(data.uri);
-                          }
+                          navController.toggelLike(songId);
                         },
-                      ),
-                    ),
-                  ),
-                );
-              });
-            },
-          ),
-        ],
-      ),
+                      ));
+                },
+              )
+            : const Center(
+                child: Text(
+                  "No favorite songs yet!",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                ),
+              );
+      }),
     );
   }
 }

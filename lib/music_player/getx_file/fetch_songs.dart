@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:yt_clone/music_player/hive/app_db.dart';
 import 'package:yt_clone/music_player/ui/home_screen_main.dart';
 
 class SongPlayerController extends GetxController {
@@ -17,6 +18,7 @@ class SongPlayerController extends GetxController {
   Duration? pausedPosition;
 
   RxInt indexPlaying = 0.obs;
+
   var volume = 0.5.obs;
   RxList<SongModel> songList = <SongModel>[].obs;
 

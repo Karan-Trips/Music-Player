@@ -7,16 +7,23 @@ import 'package:music_visualizer/music_visualizer.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 import 'package:yt_clone/music_player/getx_file/fetch_songs.dart';
+import 'package:yt_clone/music_player/getx_file/yt_search.dart';
+
 import 'package:yt_clone/music_player/widgets/export.dart';
 import 'package:volume_controller/volume_controller.dart';
 
 import '../getx_file/ui_getx_change.dart';
 
 class DetailPlayer extends StatefulWidget {
-  const DetailPlayer(
-      {super.key, required this.index, this.isFromBottomPlayer = false});
+  const DetailPlayer({
+    super.key,
+    required this.index,
+    this.isFromBottomPlayer = false,
+    this.isYt = false,
+  });
   final int index;
   final bool isFromBottomPlayer;
+  final bool isYt;
 
   @override
   State<DetailPlayer> createState() => _DetailPlayerState();
@@ -144,43 +151,58 @@ class _DetailPlayerState extends State<DetailPlayer> {
         body: SafeArea(
           child: Obx(() {
             int currentIndex = songPlayerController.indexPlaying.value;
+            var thumbnail =
+                searchController2.searchResults[currentIndex].thumbnails[0].url;
+            var id =
+                searchController2.searchResults[currentIndex].album!.albumId;
 
+            print("id------>$id");
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Padding(
                     padding:
                         EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-                    child: QueryArtworkWidget(
-                      artworkFit: BoxFit.contain,
-                      artworkHeight: 240.h,
-                      artworkWidth: 1.sw,
-                      artworkQuality: FilterQuality.high,
-                      artworkBorder: BorderRadius.circular(15.r),
-                      id: songPlayerController.songList[currentIndex].id,
-                      type: ArtworkType.AUDIO,
-                      nullArtworkWidget: Container(
-                        height: 240.h,
-                        width: 1.sw,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(colors: [
-                            Get.isDarkMode
-                                ? const Color.fromARGB(255, 108, 118, 212)
-                                : const Color.fromARGB(121, 124, 121, 121),
-                            Get.isDarkMode
-                                ? const Color.fromARGB(255, 171, 171, 175)
-                                : const Color.fromARGB(238, 172, 142, 142)
-                          ]),
-                          borderRadius: BorderRadius.circular(15.r),
-                        ),
-                        child: MusicVisualizer(
-                          curve: Curves.easeInCubic,
-                          barCount: 50,
-                          colors: colors,
-                          duration: duration,
-                        ),
-                      ),
-                    )),
+                    child: widget.isYt
+                        ? Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15.r),
+                                image: DecorationImage(
+                                  image: NetworkImage(thumbnail),
+                                  fit: BoxFit.cover,
+                                )),
+                          )
+                        : QueryArtworkWidget(
+                            artworkFit: BoxFit.contain,
+                            artworkHeight: 240.h,
+                            artworkWidth: 1.sw,
+                            artworkQuality: FilterQuality.high,
+                            artworkBorder: BorderRadius.circular(15.r),
+                            id: songPlayerController.songList[currentIndex].id,
+                            type: ArtworkType.AUDIO,
+                            nullArtworkWidget: Container(
+                              height: 240.h,
+                              width: 1.sw,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(colors: [
+                                  Get.isDarkMode
+                                      ? const Color.fromARGB(255, 108, 118, 212)
+                                      : const Color.fromARGB(
+                                          121, 124, 121, 121),
+                                  Get.isDarkMode
+                                      ? const Color.fromARGB(255, 171, 171, 175)
+                                      : const Color.fromARGB(238, 172, 142, 142)
+                                ]),
+                                borderRadius: BorderRadius.circular(15.r),
+                              ),
+                              child: MusicVisualizer(
+                                curve: Curves.easeInCubic,
+                                barCount: 50,
+                                colors: colors,
+                                duration: duration,
+                              ),
+                            ),
+                          )),
                 const SizedBox(height: 20),
                 SizedBox(
                   height: 30.h,
@@ -209,21 +231,22 @@ class _DetailPlayerState extends State<DetailPlayer> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    IconButton(
-                      icon: Icon(
-                        navController.isLiked.value
-                            ? Icons.favorite
-                            : Icons.favorite_border,
-                        size: 25.sp,
-                      ),
-                      onPressed: () {
-                        navController.toggelLike(currentIndex);
-                      },
-                      color: navController.isLiked.value
-                          ? Colors.pink
-                          : Colors.red,
-                    ),
-                    // 80.horizontalSpace,
+                    Obx(() {
+                      return IconButton(
+                        icon: Icon(
+                          navController.likedSongs.contains(currentIndex)
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          size: 25.sp,
+                        ),
+                        onPressed: () {
+                          navController.toggelLike(currentIndex);
+                        },
+                        color: navController.likedSongs.contains(currentIndex)
+                            ? Colors.pink
+                            : Colors.red,
+                      );
+                    }),
                     Padding(
                       padding: EdgeInsets.only(right: 15.w),
                       child: IconButton(

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:on_audio_query/on_audio_query.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:yt_clone/music_player/ui/detail_view.dart';
 
-import '../getx_file/search_get.dart';
-import 'detail_view.dart';
+import '../getx_file/yt_search.dart';
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});
@@ -15,7 +13,9 @@ class SearchScreen extends StatelessWidget {
       extendBody: true,
       appBar: AppBar(
         title: TextField(
-          onChanged: (query) => searchController.filterSongs(query),
+          onChanged: (query) {
+            searchController2.searchSongs(query);
+          },
           decoration: const InputDecoration(
             hintText: "Search Songs...",
             border: InputBorder.none,
@@ -28,42 +28,43 @@ class SearchScreen extends StatelessWidget {
         backgroundColor: Colors.black,
       ),
       body: Obx(() {
-        if (searchController.isLoading.value) {
+        if (searchController2.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (searchController.filteredSongs.isEmpty) {
+        if (searchController2.searchResults.isEmpty) {
           return const Center(
               child: Text("No Songs Found",
                   style: TextStyle(color: Colors.white70)));
         }
         return ListView.builder(
-          itemCount: searchController.filteredSongs.length,
+          itemCount: searchController2.searchResults.length,
           itemBuilder: (context, index) {
-            var song = searchController.filteredSongs[index];
+            var song = searchController2.searchResults[index];
+
             return ListTile(
               onTap: () {
-                Get.to(() => DetailPlayer(index: index));
+                Get.to(() => DetailPlayer(
+                      index: index,
+                      isYt: true,
+                    ));
               },
               title: Text(
-                song.title,
+                song.name,
                 style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,
                     overflow: TextOverflow.ellipsis),
               ),
               subtitle: Text(
-                song.artist == '<unknown>' ? 'Unknown Artist' : song.artist!,
+                song.artist.name,
                 style: const TextStyle(
                     color: Colors.white70,
                     fontSize: 12,
                     overflow: TextOverflow.ellipsis),
               ),
-              leading: QueryArtworkWidget(
-                id: song.id,
-                type: ArtworkType.AUDIO,
-                nullArtworkWidget:
-                    const Icon(FontAwesomeIcons.music, color: Colors.white70),
-              ),
+              leading: song.thumbnails[0].url != ''
+                  ? Image.network(song.thumbnails[0].url, width: 50, height: 50)
+                  : const Icon(Icons.music_note, color: Colors.white70),
             );
           },
         );

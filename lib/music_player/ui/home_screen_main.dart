@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:yt_clone/music_player/getx_file/fetch_songs.dart';
 import 'package:yt_clone/music_player/ui/detail_view.dart';
+import 'package:yt_clone/music_player/ui/favortire_scren.dart';
 import 'package:yt_clone/music_player/ui/home_bottom_floating_container.dart';
 import 'package:yt_clone/music_player/ui/home_screen.dart';
 import 'package:yt_clone/music_player/ui/search_screen.dart';
@@ -32,10 +33,18 @@ class _MusicHomeScreenState extends State<MusicHomeScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        leading: IconButton(
+          onPressed: () {
+            Get.to(() => const FavoriteSongsPage());
+          },
+          icon: const Icon(
+            Icons.favorite,
+          ),
+        ),
         actions: [
           IconButton(
             onPressed: () {
-              Get.to(() => const SearchScreen());
+              Get.to(() => SearchScreen());
             },
             icon: Icon(
               Icons.search,
