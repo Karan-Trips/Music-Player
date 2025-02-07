@@ -8,11 +8,12 @@ class ScrollingText extends StatefulWidget {
   final Axis scrollAxis;
   final double ratioOfBlankToScreen;
 
-  ScrollingText({super.key, 
+  const ScrollingText({
+    super.key,
     required this.text,
     required this.textStyle,
     this.scrollAxis = Axis.horizontal,
-    this.ratioOfBlankToScreen = 0.25,
+    this.ratioOfBlankToScreen = 0.3,
   });
 
   @override
@@ -28,7 +29,7 @@ class ScrollingTextState extends State<ScrollingText>
   late double screenHeight;
   double position = 0.0;
   late Timer timer;
-  final double _moveDistance = 3.0;
+  final double _moveDistance = 4.0;
   final int _timerRest = 100;
   final GlobalKey _key = GlobalKey();
 
@@ -123,7 +124,7 @@ class ScrollingTextState extends State<ScrollingText>
       key: _key,
       scrollDirection: widget.scrollAxis,
       controller: scrollController,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       children: <Widget>[
         getBothEndsChild(),
         getCenterChild(),

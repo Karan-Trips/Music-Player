@@ -27,7 +27,8 @@ class _MusicHomeScreenState extends State<MusicHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Get.isDarkMode ? Colors.black : Colors.white,
+      backgroundColor:
+          Get.isDarkMode ? const Color.fromRGBO(12, 17, 43, 1) : Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -64,7 +65,7 @@ class _MusicHomeScreenState extends State<MusicHomeScreen> {
                   clipBehavior: Clip.hardEdge,
                   children: [
                     const HomeScreenPlayer(),
-                    songIndex.value == -1
+                    selectedIndex == -1
                         ? const SizedBox()
                         : Positioned(
                             bottom: 0,

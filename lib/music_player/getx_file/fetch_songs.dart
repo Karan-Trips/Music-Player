@@ -17,6 +17,7 @@ class SongPlayerController extends GetxController {
   Duration? pausedPosition;
 
   RxInt indexPlaying = 0.obs;
+  var volume = 0.5.obs;
   RxList<SongModel> songList = <SongModel>[].obs;
 
   @override
@@ -37,6 +38,7 @@ class SongPlayerController extends GetxController {
 
     audioPlayer.playerStateStream.listen((playerState) {
       if (playerState.processingState == ProcessingState.completed) {
+        songIndex.value = indexPlaying.value;
         playNextSong();
       }
     });
@@ -158,6 +160,7 @@ class SongPlayerController extends GetxController {
       }
 
       isPlaying.value = true;
+      songIndex.value = indexPlaying.value;
       await audioPlayer.play();
       update();
     } catch (e) {
@@ -199,6 +202,12 @@ class SongPlayerController extends GetxController {
     inRepeat.value = !inRepeat.value;
     await audioPlayer.setLoopMode(inRepeat.value ? LoopMode.one : LoopMode.off);
     print("🔁 Repeat mode: ${inRepeat.value ? 'ON' : 'OFF'}");
+  }
+
+  void toogleVolume(double value) {
+    double scaledVolume = value / 100;
+    audioPlayer.setVolume(scaledVolume);
+    volume.value = scaledVolume;
   }
 }
 

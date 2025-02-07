@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:theme_provider/theme_provider.dart';
+import 'package:volume_controller/volume_controller.dart';
 
 import 'package:yt_clone/music_player/ui/home_screen_main.dart';
 
@@ -55,7 +56,6 @@ class MyApp extends StatelessWidget {
         return ScreenUtilInit(
           builder: (context, child) {
             return GetMaterialApp(
-              
               debugShowCheckedModeBanner: false,
               theme: isDarkMode ? AppTheme.dark().data : AppTheme.light().data,
               home: const MusicHomeScreen(),

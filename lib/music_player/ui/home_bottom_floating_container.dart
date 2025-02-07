@@ -37,14 +37,15 @@ class _HomeBottomPlayerState extends State<HomeBottomPlayer> {
             child: Container(
               height: 65.h,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Get.isDarkMode
+                    ? const Color.fromARGB(115, 179, 178, 194)
+                    : Colors.white,
                 borderRadius: BorderRadius.circular(30),
               ),
               padding: EdgeInsets.symmetric(horizontal: 10.w),
               child: Row(
                 children: [
                   Obx(() {
-                    print("index====>${controller.indexPlaying.value}");
                     return QueryArtworkWidget(
                       artworkFit: BoxFit.contain,
                       artworkHeight: 40.h,
