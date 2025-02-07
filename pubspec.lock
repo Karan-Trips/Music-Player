@@ -318,6 +318,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.9.3"
+  flutter_svg:
+    dependency: "direct main"
+    description:
+      name: flutter_svg
+      sha256: c200fd79c918a40c5cd50ea0877fa13f81bdaf6f0a5d3dbcc2a13e3285d6aa1b
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.17"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -488,6 +496,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.1+1"
+  interactive_slider:
+    dependency: "direct main"
+    description:
+      name: interactive_slider
+      sha256: "0b67d6161335059250141c3bfff82b15fb4f852a797a93d9e4b1234ad27b6655"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.1"
   intl:
     dependency: "direct main"
     description:
@@ -608,6 +624,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+  music_visualizer:
+    dependency: "direct main"
+    description:
+      name: music_visualizer
+      sha256: d0eafdbe052021c7b2a2b3e1c87cc163e7262410a47246d570c568ad56935096
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   nested:
     dependency: transitive
     description:
@@ -672,6 +696,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.0"
+  path_parsing:
+    dependency: transitive
+    description:
+      name: path_parsing
+      sha256: "883402936929eac138ee0a45da5b0f2c80f89913e6dc3bf77eb65b84b409c6ca"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   path_provider:
     dependency: transitive
     description:
@@ -800,6 +832,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.2"
+  ripple_wave:
+    dependency: "direct main"
+    description:
+      name: ripple_wave
+      sha256: "3aeae006adf309e66ae26e4b8562bdbffb63657d64a6546da52dabd63f005c8b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.4"
   rxdart:
     dependency: transitive
     description:
@@ -973,6 +1013,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  syncfusion_flutter_core:
+    dependency: transitive
+    description:
+      name: syncfusion_flutter_core
+      sha256: "3c1876b0a245de23de3b17a19e3106fed57d88f4fd2c8dc9bc1976705b1c31d5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "28.2.4"
+  syncfusion_flutter_sliders:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_sliders
+      sha256: "5d437cfba6cf84c0d25f515fdd87550cc1241536a9c7a7943284bb676a84666b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "28.2.4"
   synchronized:
     dependency: transitive
     description:
@@ -1021,6 +1077,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.5.1"
+  vector_graphics:
+    dependency: transitive
+    description:
+      name: vector_graphics
+      sha256: "44cc7104ff32563122a929e4620cf3efd584194eec6d1d913eb5ba593dbcf6de"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.18"
+  vector_graphics_codec:
+    dependency: transitive
+    description:
+      name: vector_graphics_codec
+      sha256: "99fd9fbd34d9f9a32efd7b6a6aae14125d8237b10403b422a6a6dfeac2806146"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.13"
+  vector_graphics_compiler:
+    dependency: transitive
+    description:
+      name: vector_graphics_compiler
+      sha256: "1b4b9e706a10294258727674a340ae0d6e64a7231980f9f9a3d12e4b42407aad"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.16"
   vector_math:
     dependency: transitive
     description:

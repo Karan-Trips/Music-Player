@@ -4,9 +4,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 import 'package:on_audio_query/on_audio_query.dart';
+
 import 'package:yt_clone/music_player/ui/detail_view.dart';
 
 import '../getx_file/fetch_songs.dart';
+import 'home_screen_main.dart';
 
 class HomeScreenPlayer extends StatelessWidget {
   const HomeScreenPlayer({
@@ -22,7 +24,10 @@ class HomeScreenPlayer extends StatelessWidget {
       itemBuilder: (context, index) {
         var data = songPlayerController.songList[index];
         return ListTile(
-          onTap: () {
+          onTap: () async {
+            songIndex.value = index;
+
+            songPlayerController.indexPlaying.value = index;
             Get.to(() => DetailPlayer(index: index));
           },
           title: Text(

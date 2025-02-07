@@ -6,6 +6,7 @@ class SearchController extends GetxController {
   var allSongs = <SongModel>[].obs;
   var filteredSongs = <SongModel>[].obs;
   var isLoading = true.obs;
+  Rx<int> selectedIndex = 0.obs;
 
   @override
   void onInit() {
