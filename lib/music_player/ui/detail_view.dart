@@ -21,12 +21,14 @@ class DetailPlayer extends StatefulWidget {
     this.isFromBottomPlayer = false,
     this.isYt = false,
     this.isFromArtist = false,
+    this.isFromHome = false,
     this.song,
   });
   final int index;
   final bool isFromBottomPlayer;
   final bool isYt;
   final bool isFromArtist;
+  final bool isFromHome;
   final SongDetailed? song;
 
   @override
@@ -46,6 +48,12 @@ class _DetailPlayerState extends State<DetailPlayer> {
         widget.isFromArtist
             ? widget.song?.videoId
             : searchController2.searchResults[widget.index].videoId,
+      );
+    } else if (widget.isFromHome) {
+      songPlayerController.indexPlaying.value = widget.index;
+
+      songPlayerController.playSong(
+        songPlayerController.songList[widget.index].uri,
       );
     } else {
       if (!widget.isFromBottomPlayer) {
@@ -98,12 +106,27 @@ class _DetailPlayerState extends State<DetailPlayer> {
         body: SafeArea(
           child: Obx(() {
             int currentIndex = songPlayerController.indexPlaying.value;
-            var data = widget.isFromArtist
-                ? widget.song!
-                : searchController2.searchResults[widget.index];
-            var nameArtist = data.artist.name;
-            var songName = data.name;
-            var thumbnailUrl = data.thumbnails.last.url;
+            var data;
+            var nameArtist;
+            var songName;
+            var thumbnailUrl;
+
+            if (widget.isFromArtist) {
+              data = widget.song!;
+              nameArtist = data.artist.name;
+              songName = data.name;
+              thumbnailUrl = data.thumbnails.last.url;
+            } else if (widget.isFromHome) {
+              data = songPlayerController.songList[widget.index];
+              nameArtist = data.displayName;
+              songName = data.title;
+              thumbnailUrl = "";
+            } else {
+              data = searchController2.searchResults[widget.index];
+              nameArtist = data.artist.name;
+              songName = data.name;
+              thumbnailUrl = data.thumbnails.last.url;
+            }
 
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,

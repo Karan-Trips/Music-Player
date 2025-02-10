@@ -153,7 +153,8 @@ class SongPlayerController extends GetxController {
   }
 
   /// **▶ Play a song**
-  Future<void> playSong(String? uri, {bool isYt = false}) async {
+  Future<void> playSong(String? uri,
+      {bool isYt = false, bool isFromHome = false}) async {
     if (uri == null) {
       print("❌ Invalid song URI");
       return;
@@ -191,11 +192,11 @@ class SongPlayerController extends GetxController {
         if (indexPlaying.value < songList.length) {
           title = songList[indexPlaying.value].title;
           artist = songList[indexPlaying.value].artist!;
+          audioUrl = uri;
         }
       }
 
       print("✅ Extracted Audio URL: $audioUrl");
-      isPlaying.value = true;
 
       await audioPlayer.setAudioSource(
         AudioSource.uri(

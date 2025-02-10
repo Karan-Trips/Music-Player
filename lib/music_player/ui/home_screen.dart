@@ -12,8 +12,8 @@ class HomeScreenPlayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
+    return SingleChildScrollView(child: Obx(() {
+      return Column(
         children: [
           ListView.builder(
             physics: const NeverScrollableScrollPhysics(),
@@ -44,7 +44,10 @@ class HomeScreenPlayer extends StatelessWidget {
                       onTap: () {
                         songPlayerController.indexPlaying.value = index;
 
-                        Get.to(() => DetailPlayer(index: index));
+                        Get.to(() => DetailPlayer(
+                              index: index,
+                              isFromHome: true,
+                            ));
                       },
                       title: Text(
                         data.title,
@@ -95,7 +98,8 @@ class HomeScreenPlayer extends StatelessWidget {
                           } else {
                             songPlayerController.indexPlaying.value = index;
 
-                            songPlayerController.playSong(data.uri);
+                            songPlayerController.playSong(data.uri,
+                                isFromHome: true);
                           }
                         },
                       ),
@@ -106,7 +110,7 @@ class HomeScreenPlayer extends StatelessWidget {
             },
           ),
         ],
-      ),
-    );
+      );
+    }));
   }
 }
