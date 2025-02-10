@@ -18,6 +18,7 @@ class SearchController extends GetxController {
       final results = await ytMusicService.searchSongs(query);
       print("artist id====>${results.first.artist.artistId}");
       searchResults.assignAll(results);
+      isLoading.value = false;
       return results;
     } catch (e) {
       print("Error fetching search results: $e");
@@ -32,11 +33,13 @@ class SearchController extends GetxController {
       isLoading.value = true;
 
       final result = await ytMusicService.showArtist(query);
+      isLoading.value = false;
 
       if (result != null && result.thumbnails.isNotEmpty) {
         return result;
       } else {
         print("⚠️ No data found for artist: $query");
+        isLoading.value = false;
         return null;
       }
     } catch (e) {

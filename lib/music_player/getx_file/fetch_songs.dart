@@ -2,6 +2,7 @@
 
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
@@ -9,8 +10,10 @@ import 'package:yt_clone/music_player/hive/app_db.dart';
 import 'package:yt_clone/music_player/ui/home_screen_main.dart';
 
 class SongPlayerController extends GetxController {
+  static final SongPlayerController instance = Get.find<SongPlayerController>();
+
+  late AudioPlayer audioPlayer;
   final audioQuery = OnAudioQuery();
-  final audioPlayer = AudioPlayer();
   var isPlaying = false.obs;
   var currentPosition = Duration.zero.obs;
   var totalDuration = Duration.zero.obs;
@@ -26,7 +29,7 @@ class SongPlayerController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-
+    audioPlayer = AudioPlayer();
     audioPlayer.durationStream.listen((duration) {
       if (duration != null) {
         print('Audio duration: $duration');
@@ -45,6 +48,12 @@ class SongPlayerController extends GetxController {
         playNextSong();
       }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    audioPlayer.dispose();
   }
 
   /// **🔄 Play next song automatically**
@@ -163,7 +172,20 @@ class SongPlayerController extends GetxController {
         print("✅ Extracted Audio URL: $audioUrl");
 
         await audioPlayer.setUrl(audioUrl);
+
         yt.close();
+        await audioPlayer.setAudioSource(
+          AudioSource.uri(
+            Uri.parse(audioUrl),
+            tag: MediaItem(
+              id: uri,
+              album: "YT Clone",
+              title: 'Karan',
+              artist: 'artist',
+              artUri: Uri.parse(''),
+            ),
+          ),
+        );
       } else {
         await audioPlayer.setAudioSource(AudioSource.uri(Uri.parse(uri)));
       }
@@ -182,6 +204,7 @@ class SongPlayerController extends GetxController {
       update();
     } catch (e) {
       print("❌ Error playing song: $e");
+      isLoading.value = false;
     }
   }
 

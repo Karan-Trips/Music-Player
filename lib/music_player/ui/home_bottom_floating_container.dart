@@ -17,7 +17,6 @@ class HomeBottomPlayer extends StatefulWidget {
 }
 
 class _HomeBottomPlayerState extends State<HomeBottomPlayer> {
-  final SongPlayerController controller = Get.find<SongPlayerController>();
   final List<Color> colors = [
     Colors.red[900]!,
     Colors.green[900]!,
@@ -53,7 +52,7 @@ class _HomeBottomPlayerState extends State<HomeBottomPlayer> {
                       artworkQuality: FilterQuality.high,
                       artworkBorder: BorderRadius.circular(10.r),
                       id: songPlayerController
-                          .songList[controller.indexPlaying.value].id,
+                          .songList[songPlayerController.indexPlaying.value].id,
                       type: ArtworkType.AUDIO,
                       nullArtworkWidget: Container(
                         height: 40.h,
@@ -77,9 +76,10 @@ class _HomeBottomPlayerState extends State<HomeBottomPlayer> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          controller.songList.isNotEmpty
-                              ? controller
-                                  .songList[controller.indexPlaying.value]
+                          songPlayerController.songList.isNotEmpty
+                              ? songPlayerController
+                                  .songList[
+                                      songPlayerController.indexPlaying.value]
                                   .displayName
                               : 'No song playing',
                           overflow: TextOverflow.ellipsis,
@@ -90,7 +90,8 @@ class _HomeBottomPlayerState extends State<HomeBottomPlayer> {
                           ),
                         ),
                         Obx(() => Text(
-                              formatDuration(controller.currentPosition.value),
+                              formatDuration(
+                                  songPlayerController.currentPosition.value),
                               style: const TextStyle(
                                 color: Colors.grey,
                                 fontSize: 11,
@@ -106,12 +107,13 @@ class _HomeBottomPlayerState extends State<HomeBottomPlayer> {
                                     const AlwaysStoppedAnimation(Colors.red),
                                 borderRadius: BorderRadius.circular(10.r),
                                 backgroundColor: Colors.grey.withOpacity(0.7),
-                                value: (controller
+                                value: (songPlayerController
                                             .totalDuration.value.inSeconds >
                                         0)
-                                    ? controller
+                                    ? songPlayerController
                                             .currentPosition.value.inSeconds /
-                                        controller.totalDuration.value.inSeconds
+                                        songPlayerController
+                                            .totalDuration.value.inSeconds
                                     : 0,
                               ),
                             ))
@@ -123,25 +125,25 @@ class _HomeBottomPlayerState extends State<HomeBottomPlayer> {
                     children: [
                       IconButton(
                         onPressed: () {
-                          controller.playPreviousSong();
+                          songPlayerController.playPreviousSong();
                         },
                         icon: const Icon(Icons.skip_previous),
                       ),
                       const SizedBox(width: 10),
                       Obx(() => IconButton(
                             onPressed: () {
-                              if (controller.isPlaying.value) {
-                                controller.pauseSong();
+                              if (songPlayerController.isPlaying.value) {
+                                songPlayerController.pauseSong();
                               } else {
-                                controller.resumeSong();
+                                songPlayerController.resumeSong();
                               }
                             },
                             icon: Icon(
-                              controller.isPlaying.value
+                              songPlayerController.isPlaying.value
                                   ? Icons.pause
                                   : Icons.play_arrow,
                               size: 25,
-                              color: controller.isPlaying.value
+                              color: songPlayerController.isPlaying.value
                                   ? Colors.red
                                   : Colors.black,
                             ),
@@ -149,7 +151,7 @@ class _HomeBottomPlayerState extends State<HomeBottomPlayer> {
                       const SizedBox(width: 10),
                       IconButton(
                         onPressed: () {
-                          controller.playNextSong();
+                          songPlayerController.playNextSong();
                         },
                         icon: const Icon(Icons.skip_next),
                       ),

@@ -1,11 +1,13 @@
 // ignore_for_file: unused_element
 
+import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:theme_provider/theme_provider.dart';
+import 'package:yt_clone/music_player/getx_file/fetch_songs.dart';
 
 import 'package:yt_clone/music_player/ui/home_screen_main.dart';
 import 'package:yt_clone/music_player/widgets/yt_music_service.dart';
@@ -16,13 +18,16 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppDB.init();
   Get.put(AppDB());
+  Get.lazyPut(() => SongPlayerController(), fenix: true);
   await ytMusicService.initialize();
   // TODO:Under Develpment
-  // await JustAudioBackground.init(
-  //   androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-  //   androidNotificationChannelName: 'Audio playback',
-  //   androidNotificationOngoing: true,
-  // );
+  await JustAudioBackground.init(
+    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+    androidNotificationChannelName: 'Audio playback',
+    androidNotificationOngoing: true,
+  );
+  final session = await AudioSession.instance;
+  await session.configure(const AudioSessionConfiguration.music());
   // TODO:Under Develpment
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

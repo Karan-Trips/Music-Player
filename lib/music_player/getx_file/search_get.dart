@@ -28,18 +28,6 @@ class SearchController extends GetxController {
       isLoading(false);
     }
   }
-
-  void filterSongs(String query) {
-    if (query.isEmpty) {
-      filteredSongs.assignAll(allSongs);
-    } else {
-      filteredSongs.assignAll(
-        allSongs.where((song) =>
-            song.title.toLowerCase().contains(query.toLowerCase()) ||
-            (song.artist?.toLowerCase() ?? '').contains(query.toLowerCase())),
-      );
-    }
-  }
 }
 
 final SearchController searchController = Get.put(SearchController());

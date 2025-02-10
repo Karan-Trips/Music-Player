@@ -2,6 +2,7 @@ import 'package:dart_ytmusic_api/types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:yt_clone/music_player/ui/detail_view.dart';
 import 'package:yt_clone/music_player/ui/youtube_ui/artist_topsong.dart';
 
@@ -60,6 +61,8 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor:
+          Get.isDarkMode ? const Color.fromRGBO(12, 17, 43, 1) : Colors.white,
       extendBody: true,
       appBar: AppBar(
         title: TextField(
@@ -73,22 +76,21 @@ class _SearchScreenState extends State<SearchScreen> {
           style: const TextStyle(color: Colors.white),
           cursorColor: Colors.white,
         ),
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.transparent,
       ),
       body: Obx(() {
         if (searchController2.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(
+              child: LoadingAnimationWidget.staggeredDotsWave(
+                  color: Colors.red, size: 40.sp));
         }
 
         if (searchController2.searchResults.isEmpty) {
           return searchController2.searchArtists.isNotEmpty
               ? _buildArtistGrid()
-              : const Center(
-                  child: Text(
-                    "No Artists Found",
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                );
+              : Center(
+                  child: LoadingAnimationWidget.staggeredDotsWave(
+                      color: Colors.red, size: 40.sp));
         }
 
         return _buildSongList();
@@ -107,9 +109,14 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
       itemBuilder: (context, index) {
         final artist = searchController2.searchArtists[index];
+
         return InkWell(
           onTap: () {
-            Get.to(() => ArtistSongsPage(artist: artist));
+            Get.to(
+              () => ArtistSongsPage(
+                artist: artist,
+              ),
+            );
           },
           child: Column(
             children: [

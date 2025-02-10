@@ -1,3 +1,4 @@
+import 'package:dart_ytmusic_api/types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -19,28 +20,32 @@ class DetailPlayer extends StatefulWidget {
     required this.index,
     this.isFromBottomPlayer = false,
     this.isYt = false,
+    this.isFromArtist = false,
+    this.song,
   });
   final int index;
   final bool isFromBottomPlayer;
   final bool isYt;
+  final bool isFromArtist;
+  final SongDetailed? song;
 
   @override
   State<DetailPlayer> createState() => _DetailPlayerState();
 }
 
 class _DetailPlayerState extends State<DetailPlayer> {
-  OverlayEntry? _overlayEntry;
-
-  final LayerLink _layerLink = LayerLink();
-
   @override
   void initState() {
     super.initState();
 
     if (widget.isYt) {
+      print(
+          "id---->${searchController2.searchArtists[widget.index].topSongs[widget.index].videoId}");
       songPlayerController.playSong(
         isYt: true,
-        searchController2.searchResults[widget.index].videoId,
+        widget.isFromArtist
+            ? widget.song?.videoId
+            : searchController2.searchResults[widget.index].videoId,
       );
     } else {
       if (!widget.isFromBottomPlayer) {
@@ -93,10 +98,12 @@ class _DetailPlayerState extends State<DetailPlayer> {
         body: SafeArea(
           child: Obx(() {
             int currentIndex = songPlayerController.indexPlaying.value;
-            var data = searchController2.searchResults[widget.index];
+            var data = widget.isFromArtist
+                ? widget.song!
+                : searchController2.searchResults[widget.index];
             var nameArtist = data.artist.name;
             var songName = data.name;
-            var thumbnailUrl = data.thumbnails[1].url;
+            var thumbnailUrl = data.thumbnails.last.url;
 
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
