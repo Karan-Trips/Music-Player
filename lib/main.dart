@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:theme_provider/theme_provider.dart';
 
 import 'package:yt_clone/music_player/ui/home_screen_main.dart';
@@ -17,21 +18,10 @@ Future<void> main() async {
   Get.put(AppDB());
   await ytMusicService.initialize();
   // TODO:Under Develpment
-  // await AudioService.init(
-  //   builder: () => AudioPlayerHandler(),
-  //   config: AudioServiceConfig(
-  //     androidNotificationChannelId: 'com.example.yt_clone',
-  //     androidNotificationChannelName: 'Audio Service',
-  //     androidNotificationOngoing: true,
-  //   ),
-  // );
-  // _audioHandler = await AudioService.init(
-  //   builder: () => AudioPlayerHandler(),
-  //   config: const AudioServiceConfig(
-  //     androidNotificationChannelId: '',
-  //     androidNotificationChannelName: 'Audio playback',
-  //     androidNotificationOngoing: true,
-  //   ),
+  // await JustAudioBackground.init(
+  //   androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+  //   androidNotificationChannelName: 'Audio playback',
+  //   androidNotificationOngoing: true,
   // );
   // TODO:Under Develpment
   SystemChrome.setPreferredOrientations([

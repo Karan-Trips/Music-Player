@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:yt_clone/music_player/hive/app_db.dart';
 import 'package:yt_clone/music_player/ui/home_screen_main.dart';
 
@@ -143,19 +144,34 @@ class SongPlayerController extends GetxController {
   }
 
   /// **▶ Play a song**
-  Future<void> playSong(String? uri) async {
+  Future<void> playSong(String? uri, {bool isYt = false}) async {
     if (uri == null) {
-      print("Invalid song URI");
+      print("❌ Invalid song URI");
       return;
     }
 
     try {
-      await audioPlayer.setAudioSource(AudioSource.uri(Uri.parse(uri)));
+      if (isYt) {
+        print("Fetching YouTube Audio... of id===>>$uri");
+
+        var yt = YoutubeExplode();
+        var manifest = await yt.videos.streamsClient.getManifest(uri);
+
+        var audioStream = manifest.audioOnly.withHighestBitrate();
+        var audioUrl = audioStream.url.toString();
+
+        print("✅ Extracted Audio URL: $audioUrl");
+
+        await audioPlayer.setUrl(audioUrl);
+        yt.close();
+      } else {
+        await audioPlayer.setAudioSource(AudioSource.uri(Uri.parse(uri)));
+      }
 
       Duration? duration = audioPlayer.duration;
       if (duration != null) {
         totalDuration.value = duration;
-        print("Updated Total Duration: $duration");
+        print("✅ Updated Total Duration: $duration");
       } else {
         print("⚠️ Duration is null. Trying alternative method.");
       }
@@ -165,10 +181,9 @@ class SongPlayerController extends GetxController {
       await audioPlayer.play();
       update();
     } catch (e) {
-      print("Error playing song: $e");
+      print("❌ Error playing song: $e");
     }
   }
-
 
   Future<void> pauseSong() async {
     try {
@@ -180,7 +195,6 @@ class SongPlayerController extends GetxController {
       print("❌ Error pausing song: $e");
     }
   }
-
 
   Future<void> resumeSong() async {
     try {
@@ -198,7 +212,6 @@ class SongPlayerController extends GetxController {
     }
   }
 
-
   Future<void> repeatSong() async {
     inRepeat.value = !inRepeat.value;
     await audioPlayer.setLoopMode(inRepeat.value ? LoopMode.one : LoopMode.off);
@@ -211,6 +224,5 @@ class SongPlayerController extends GetxController {
     volume.value = scaledVolume;
   }
 }
-
 
 SongPlayerController songPlayerController = Get.put(SongPlayerController());

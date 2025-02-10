@@ -6,7 +6,7 @@ import 'package:on_audio_query/on_audio_query.dart';
 import 'package:yt_clone/music_player/getx_file/fetch_songs.dart';
 import 'package:yt_clone/music_player/ui/detail_view.dart';
 
-import '../getx_file/ui_getx_change.dart';
+import '../../getx_file/ui_getx_change.dart';
 
 class FavoriteSongsPage extends StatelessWidget {
   const FavoriteSongsPage({super.key});

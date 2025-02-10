@@ -16,6 +16,7 @@ class HomeScreenPlayer extends StatelessWidget {
       child: Column(
         children: [
           ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
             padding: EdgeInsets.only(bottom: 80.h),
             shrinkWrap: true,
             itemCount: songPlayerController.songList.length,
@@ -42,7 +43,7 @@ class HomeScreenPlayer extends StatelessWidget {
                     child: ListTile(
                       onTap: () {
                         songPlayerController.indexPlaying.value = index;
-                        print("index=====_---$index");
+
                         Get.to(() => DetailPlayer(index: index));
                       },
                       title: Text(

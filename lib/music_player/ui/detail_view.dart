@@ -7,9 +7,9 @@ import 'package:music_visualizer/music_visualizer.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 import 'package:yt_clone/music_player/getx_file/fetch_songs.dart';
+import 'package:yt_clone/music_player/getx_file/yt/yt_search.dart';
 
 import 'package:yt_clone/music_player/widgets/export.dart';
-import 'package:volume_controller/volume_controller.dart';
 
 import '../getx_file/ui_getx_change.dart';
 
@@ -32,82 +32,25 @@ class _DetailPlayerState extends State<DetailPlayer> {
   OverlayEntry? _overlayEntry;
 
   final LayerLink _layerLink = LayerLink();
-  RxDouble volume = 50.0.obs;
 
   @override
   void initState() {
     super.initState();
 
-    VolumeController.instance.getVolume().then((vol) {
-      volume.value = vol * 100;
-    });
-
-    if (!widget.isFromBottomPlayer) {
-      songPlayerController.indexPlaying.value = widget.index;
-
+    if (widget.isYt) {
       songPlayerController.playSong(
-        songPlayerController.songList[widget.index].uri,
+        isYt: true,
+        searchController2.searchResults[widget.index].videoId,
       );
+    } else {
+      if (!widget.isFromBottomPlayer) {
+        songPlayerController.indexPlaying.value = widget.index;
+
+        songPlayerController.playSong(
+          songPlayerController.songList[widget.index].uri,
+        );
+      }
     }
-  }
-
-  void _showVolumeOverlay(BuildContext context) {
-    if (_overlayEntry != null) return;
-
-    _overlayEntry = OverlayEntry(
-      builder: (context) => Positioned(
-        right: 95.w,
-        bottom: 250.h,
-        child: Material(
-          color: Colors.transparent,
-          child: CompositedTransformFollower(
-            link: _layerLink,
-            offset: const Offset(0, -100),
-            child: Obx(() => Container(
-                  width: 50.w,
-                  height: 200.h,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Column(
-                    children: [
-                      const Icon(Icons.volume_up,
-                          color: Colors.white, size: 20),
-                      Expanded(
-                        child: RotatedBox(
-                          quarterTurns: -1,
-                          child: Slider(
-                            value: songPlayerController.volume.value,
-                            min: 0,
-                            max: 100,
-                            activeColor: Colors.blue,
-                            inactiveColor: Colors.grey.shade300,
-                            onChanged: (value) {
-                              songPlayerController.volume.value = value;
-
-                              VolumeController.instance.setVolume(value / 100);
-                            },
-                          ),
-                        ),
-                      ),
-                      const Icon(Icons.volume_down,
-                          color: Colors.white, size: 20),
-                    ],
-                  ),
-                )),
-          ),
-        ),
-      ),
-    );
-
-    Overlay.of(context).insert(_overlayEntry!);
-  }
-
-  void _removeOverlay() {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
   }
 
   final List<Color> colors = [
@@ -150,44 +93,81 @@ class _DetailPlayerState extends State<DetailPlayer> {
         body: SafeArea(
           child: Obx(() {
             int currentIndex = songPlayerController.indexPlaying.value;
+            var data = searchController2.searchResults[widget.index];
+            var nameArtist = data.artist.name;
+            var songName = data.name;
+            var thumbnailUrl = data.thumbnails[1].url;
 
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-                  child: QueryArtworkWidget(
-                    artworkFit: BoxFit.contain,
-                    artworkHeight: 240.h,
-                    artworkWidth: 1.sw,
-                    artworkQuality: FilterQuality.high,
-                    artworkBorder: BorderRadius.circular(15.r),
-                    id: songPlayerController.songList[currentIndex].id,
-                    type: ArtworkType.AUDIO,
-                    nullArtworkWidget: Container(
-                      height: 240.h,
-                      width: 1.sw,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Get.isDarkMode
-                                ? const Color.fromARGB(255, 108, 118, 212)
-                                : const Color.fromARGB(121, 124, 121, 121),
-                            Get.isDarkMode
-                                ? const Color.fromARGB(255, 171, 171, 175)
-                                : const Color.fromARGB(238, 172, 142, 142)
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(15.r),
-                      ),
-                      child: MusicVisualizer(
-                        curve: Curves.easeInCubic,
-                        barCount: 50,
-                        colors: colors,
-                        duration: duration,
-                      ),
-                    ),
+                Expanded(
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                    child: widget.isYt
+                        ? Container(
+                            height: 240.h,
+                            width: 1.sw,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                filterQuality: FilterQuality.high,
+                                image: NetworkImage(
+                                  thumbnailUrl,
+                                ),
+                                fit: BoxFit.contain,
+                              ),
+                              gradient: LinearGradient(
+                                colors: [
+                                  Get.isDarkMode
+                                      ? const Color.fromARGB(255, 108, 118, 212)
+                                      : const Color.fromARGB(
+                                          121, 124, 121, 121),
+                                  Get.isDarkMode
+                                      ? const Color.fromARGB(255, 171, 171, 175)
+                                      : const Color.fromARGB(238, 172, 142, 142)
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(15.r),
+                            ),
+                          )
+                        : QueryArtworkWidget(
+                            artworkFit: BoxFit.contain,
+                            keepOldArtwork: true,
+                            artworkHeight: 240.h,
+                            artworkWidth: 1.sw,
+                            artworkQuality: FilterQuality.high,
+                            artworkBorder: BorderRadius.circular(15.r),
+                            id: songPlayerController.songList[currentIndex].id,
+                            type: ArtworkType.AUDIO,
+                            nullArtworkWidget: Container(
+                              height: 240.h,
+                              width: 1.sw,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Get.isDarkMode
+                                        ? const Color.fromARGB(
+                                            255, 108, 118, 212)
+                                        : const Color.fromARGB(
+                                            121, 124, 121, 121),
+                                    Get.isDarkMode
+                                        ? const Color.fromARGB(
+                                            255, 171, 171, 175)
+                                        : const Color.fromARGB(
+                                            238, 172, 142, 142)
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(15.r),
+                              ),
+                              child: MusicVisualizer(
+                                curve: Curves.easeInCubic,
+                                barCount: 50,
+                                colors: colors,
+                                duration: duration,
+                              ),
+                            ),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -200,7 +180,9 @@ class _DetailPlayerState extends State<DetailPlayer> {
                     accelerationCurve: Curves.fastLinearToSlowEaseIn,
                     blankSpace: 200,
                     decelerationCurve: Curves.easeOut,
-                    text: songPlayerController.songList[currentIndex].title,
+                    text: widget.isYt
+                        ? songName
+                        : songPlayerController.songList[currentIndex].title,
                     style: GoogleFonts.poppins(
                       fontSize: 20.sp,
                       fontWeight: FontWeight.bold,
@@ -209,48 +191,31 @@ class _DetailPlayerState extends State<DetailPlayer> {
                   ),
                 ),
                 Text(
-                  songPlayerController.songList[currentIndex].artist ?? '',
+                  widget.isYt
+                      ? nameArtist
+                      : songPlayerController.songList[currentIndex].artist ??
+                          '',
                   style: GoogleFonts.poppins(
                     fontSize: 16.sp,
                     color: Get.isDarkMode ? Colors.white54 : Colors.black,
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Obx(() {
-                      return IconButton(
-                        icon: Icon(
-                          navController.likedSongs.contains(currentIndex)
-                              ? Icons.favorite
-                              : Icons.favorite_border,
-                          size: 25.sp,
-                        ),
-                        onPressed: () {
-                          navController.toggelLike(currentIndex);
-                        },
-                        color: navController.likedSongs.contains(currentIndex)
-                            ? Colors.pink
-                            : Colors.red,
-                      );
-                    }),
-                    Padding(
-                      padding: EdgeInsets.only(right: 15.w),
-                      child: IconButton(
-                        icon: Icon(Icons.volume_down,
-                            color: Get.isDarkMode ? Colors.white : Colors.black,
-                            size: 30.sp),
-                        onPressed: () {
-                          if (_overlayEntry == null) {
-                            _showVolumeOverlay(context);
-                          } else {
-                            _removeOverlay();
-                          }
-                        },
-                      ),
+                Obx(() {
+                  return IconButton(
+                    icon: Icon(
+                      navController.likedSongs.contains(currentIndex)
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      size: 25.sp,
                     ),
-                  ],
-                ),
+                    onPressed: () {
+                      navController.toggelLike(currentIndex);
+                    },
+                    color: navController.likedSongs.contains(currentIndex)
+                        ? Colors.pink
+                        : Colors.red,
+                  );
+                }),
                 SizedBox(height: 5.h),
                 Obx(() {
                   Duration position =
