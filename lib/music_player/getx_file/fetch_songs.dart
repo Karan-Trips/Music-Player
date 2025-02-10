@@ -6,7 +6,7 @@ import 'package:just_audio_background/just_audio_background.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
-import 'package:yt_clone/music_player/hive/app_db.dart';
+import 'package:yt_clone/music_player/getx_file/yt/yt_search.dart';
 import 'package:yt_clone/music_player/ui/home_screen_main.dart';
 
 class SongPlayerController extends GetxController {
@@ -160,51 +160,61 @@ class SongPlayerController extends GetxController {
     }
 
     try {
+      if (audioPlayer.playing) {
+        await audioPlayer.stop();
+      }
+
+      String audioUrl = uri;
+      String title = "Unknown Song";
+      String artist = "Unknown Artist";
+      String album = "YT Clone";
+      String thumbnailUrl = "";
+
       if (isYt) {
-        print("Fetching YouTube Audio... of id===>>$uri");
+        print("Fetching YouTube Audio... of id ===>> $uri");
 
         var yt = YoutubeExplode();
         var manifest = await yt.videos.streamsClient.getManifest(uri);
-
         var audioStream = manifest.audioOnly.withHighestBitrate();
-        var audioUrl = audioStream.url.toString();
-
-        print("✅ Extracted Audio URL: $audioUrl");
-
-        await audioPlayer.setUrl(audioUrl);
-
+        audioUrl = audioStream.url.toString();
         yt.close();
-        await audioPlayer.setAudioSource(
-          AudioSource.uri(
-            Uri.parse(audioUrl),
-            tag: MediaItem(
-              id: uri,
-              album: "YT Clone",
-              title: 'Karan',
-              artist: 'artist',
-              artUri: Uri.parse(''),
-            ),
-          ),
-        );
+        print("index=====>${indexPlaying.value}");
+        print("index=====>2${searchController2.searchArtists.length}");
+        if (indexPlaying.value < searchController2.searchArtists.length) {
+          title = searchController2.searchArtists[indexPlaying.value].name;
+          artist = searchController2.searchArtists[indexPlaying.value].name;
+          thumbnailUrl = searchController2
+              .searchArtists[indexPlaying.value].thumbnails.last.url;
+          print("title===>$title");
+        }
       } else {
-        await audioPlayer.setAudioSource(AudioSource.uri(Uri.parse(uri)));
+        if (indexPlaying.value < songList.length) {
+          title = songList[indexPlaying.value].title;
+          artist = songList[indexPlaying.value].artist!;
+        }
       }
 
-      Duration? duration = audioPlayer.duration;
-      if (duration != null) {
-        totalDuration.value = duration;
-        print("✅ Updated Total Duration: $duration");
-      } else {
-        print("⚠️ Duration is null. Trying alternative method.");
-      }
-
+      print("✅ Extracted Audio URL: $audioUrl");
       isPlaying.value = true;
-      songIndex.value = indexPlaying.value;
+
+      await audioPlayer.setAudioSource(
+        AudioSource.uri(
+          Uri.parse(audioUrl),
+          tag: MediaItem(
+            id: uri,
+            album: album,
+            title: title,
+            artist: artist,
+            artUri: thumbnailUrl.isNotEmpty ? Uri.tryParse(thumbnailUrl) : null,
+          ),
+        ),
+      );
+
       await audioPlayer.play();
+      songIndex.value = indexPlaying.value;
       update();
     } catch (e) {
       print("❌ Error playing song: $e");
-      isLoading.value = false;
     }
   }
 

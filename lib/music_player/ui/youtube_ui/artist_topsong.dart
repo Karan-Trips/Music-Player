@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:dart_ytmusic_api/types.dart';
 import 'package:get/get.dart';
+import 'package:yt_clone/music_player/getx_file/fetch_songs.dart';
+import 'package:yt_clone/music_player/getx_file/yt/yt_search.dart';
 import 'package:yt_clone/music_player/ui/detail_view.dart';
 
 class ArtistSongsPage extends StatelessWidget {
@@ -41,6 +43,7 @@ class ArtistSongsPage extends StatelessWidget {
             onTap: () {
               print("Selected song:$index");
               if (artist.topSongs.isNotEmpty) {
+                songPlayerController.indexPlaying.value = index;
                 Get.to(() => DetailPlayer(
                       index: index,
                       isFromArtist: true,
