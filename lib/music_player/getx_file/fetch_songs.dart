@@ -1,5 +1,4 @@
-// ignore_for_file: avoid_print
-
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -10,8 +9,6 @@ import 'package:yt_clone/music_player/getx_file/yt/yt_search.dart';
 import 'package:yt_clone/music_player/ui/home_screen_main.dart';
 
 class SongPlayerController extends GetxController {
-  static final SongPlayerController instance = Get.find<SongPlayerController>();
-
   late AudioPlayer audioPlayer;
   final audioQuery = OnAudioQuery();
   var isPlaying = false.obs;
@@ -96,7 +93,6 @@ class SongPlayerController extends GetxController {
     super.onClose();
   }
 
-  /// **📂 Check storage permissions & fetch songs**
   Future<void> checkPermissionAndFetchSongs() async {
     try {
       var status = await Permission.storage.status;
@@ -170,8 +166,11 @@ class SongPlayerController extends GetxController {
       String artist = "Unknown Artist";
       String album = "YT Clone";
       String thumbnailUrl = "";
-
       if (isYt) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          isPlaying.value = true;
+        });
+
         print("Fetching YouTube Audio... of id ===>> $uri");
 
         var yt = YoutubeExplode();
@@ -179,20 +178,22 @@ class SongPlayerController extends GetxController {
         var audioStream = manifest.audioOnly.withHighestBitrate();
         audioUrl = audioStream.url.toString();
         yt.close();
-        print("index=====>${indexPlaying.value}");
-        print("index=====>2${searchController2.searchArtists.length}");
+
         if (indexPlaying.value < searchController2.searchArtists.length) {
           title = searchController2.searchArtists[indexPlaying.value].name;
           artist = searchController2.searchArtists[indexPlaying.value].name;
           thumbnailUrl = searchController2
               .searchArtists[indexPlaying.value].thumbnails.last.url;
-          print("title===>$title");
         }
       } else {
         if (indexPlaying.value < songList.length) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            isPlaying.value = true;
+          });
           title = songList[indexPlaying.value].title;
           artist = songList[indexPlaying.value].artist!;
           audioUrl = uri;
+          songIndex.value = indexPlaying.value;
         }
       }
 
@@ -212,7 +213,6 @@ class SongPlayerController extends GetxController {
       );
 
       await audioPlayer.play();
-      songIndex.value = indexPlaying.value;
       update();
     } catch (e) {
       print("❌ Error playing song: $e");
@@ -233,9 +233,9 @@ class SongPlayerController extends GetxController {
   Future<void> resumeSong() async {
     try {
       if (pausedPosition != null) {
+        isPlaying.value = true;
         await audioPlayer.seek(pausedPosition!);
         await audioPlayer.play();
-        isPlaying.value = true;
         print("▶ Resumed song from: $pausedPosition");
         update();
       } else {

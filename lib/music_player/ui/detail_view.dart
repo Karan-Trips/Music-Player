@@ -107,9 +107,9 @@ class _DetailPlayerState extends State<DetailPlayer> {
           child: Obx(() {
             int currentIndex = songPlayerController.indexPlaying.value;
             var data;
-            var nameArtist;
-            var songName;
-            var thumbnailUrl;
+            String nameArtist;
+            String songName;
+            String thumbnailUrl;
 
             if (widget.isFromArtist) {
               data = widget.song!;

@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:dart_ytmusic_api/types.dart';
 import 'package:get/get.dart';
 import 'package:yt_clone/music_player/getx_file/fetch_songs.dart';
-import 'package:yt_clone/music_player/getx_file/yt/yt_search.dart';
 import 'package:yt_clone/music_player/ui/detail_view.dart';
 
 class ArtistSongsPage extends StatelessWidget {
@@ -29,8 +28,11 @@ class ArtistSongsPage extends StatelessWidget {
 
           return ListTile(
             leading: song.thumbnails.isNotEmpty
-                ? Image.network(song.thumbnails.last.url,
-                    width: 50.w, height: 50.h)
+                ? Image.network(
+                    song.thumbnails.last.url,
+                    width: 50.w,
+                    height: 50.h,
+                  )
                 : const Icon(Icons.music_note, color: Colors.white70),
             title: Text(
               song.name,

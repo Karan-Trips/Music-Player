@@ -1,8 +1,10 @@
+import 'package:dart_ytmusic_api/types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:yt_clone/music_player/getx_file/fetch_songs.dart';
+import 'package:yt_clone/music_player/getx_file/yt/yt_search.dart';
 import 'package:yt_clone/music_player/ui/detail_view.dart';
 import 'package:yt_clone/music_player/ui/favoutire_music/favortire_scren.dart';
 import 'package:yt_clone/music_player/ui/home_bottom_floating_container.dart';
@@ -19,10 +21,45 @@ class MusicHomeScreen extends StatefulWidget {
 }
 
 class _MusicHomeScreenState extends State<MusicHomeScreen> {
+  final List<String> defaultArtistNames = [
+    "UCDxKh1gFWeYsqePvgVzmPoQ",
+    "UCdWuR07og626xwU93eSCh9A",
+    "UCVfSAUepe_FzP6ge6WexO5Q",
+    "UCJ2m-WpROlZCiZZID9r7NSQ",
+    "UC19pnd-F7tw6vDhkmEiAkgA",
+    "UCrC-7fsdTCYeaRBpwA6j-Eg",
+    "UCsC4u-BJAd4OX1hJXtwXSOQ",
+    "UCVGomUS__PL0c4jDXa0QwXA",
+    "UCGPCYz1FTl_dvFFnzQTQzjw"
+  ];
   @override
   void initState() {
     super.initState();
     songPlayerController.checkPermissionAndFetchSongs();
+    fetchDefaultArtists();
+  }
+
+  void fetchDefaultArtists() async {
+    searchController2.isLoading.value = true;
+
+    try {
+      final List<ArtistFull?> fetchedArtists = await Future.wait(
+        defaultArtistNames.map((name) async {
+          try {
+            return await searchController2.fetchArtist(name);
+          } catch (e) {
+            print("⚠️ Error fetching artist $name: $e");
+            return null;
+          }
+        }),
+      );
+      searchController2.searchArtists
+          .assignAll(fetchedArtists.whereType<ArtistFull>());
+    } catch (e) {
+      print("❌ Error fetching artists: $e");
+    } finally {
+      searchController2.isLoading.value = false;
+    }
   }
 
   @override
