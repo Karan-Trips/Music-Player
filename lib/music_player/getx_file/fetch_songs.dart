@@ -1,8 +1,12 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:yt_clone/music_player/getx_file/yt/yt_search.dart';
@@ -53,7 +57,6 @@ class SongPlayerController extends GetxController {
     audioPlayer.dispose();
   }
 
-  /// **🔄 Play next song automatically**
   void playNextSong() {
     if (indexPlaying.value < songList.length - 1) {
       indexPlaying.value += 1;
@@ -64,7 +67,6 @@ class SongPlayerController extends GetxController {
     }
   }
 
-  /// **⏮ Play previous song**
   void playPreviousSong() {
     if (indexPlaying.value > 0) {
       indexPlaying.value -= 1;
@@ -77,7 +79,6 @@ class SongPlayerController extends GetxController {
     }
   }
 
-  /// **⏩ Seek to a specific position**
   Future<void> seekTo(Duration position) async {
     try {
       await audioPlayer.seek(position);
@@ -125,7 +126,6 @@ class SongPlayerController extends GetxController {
     }
   }
 
-  /// **🎵 Fetch all songs**
   Future<void> fetchSongs() async {
     try {
       isLoading.value = true;
@@ -148,7 +148,6 @@ class SongPlayerController extends GetxController {
     }
   }
 
-  /// **▶ Play a song**
   Future<void> playSong(String? uri, {bool isYt = false}) async {
     if (uri == null) {
       print("❌ Invalid song URI");
@@ -263,6 +262,42 @@ class SongPlayerController extends GetxController {
     double scaledVolume = value / 100;
     audioPlayer.setVolume(scaledVolume);
     volume.value = scaledVolume;
+  }
+
+  Future<void> downloadTheSong(String videoId) async {
+    try {
+      var yt = YoutubeExplode();
+      Directory? dir;
+      var manifest = await yt.videos.streamsClient.getManifest(videoId);
+      var audioStream = manifest.audioOnly.withHighestBitrate();
+      String audioUrl = audioStream.url.toString();
+      yt.close();
+
+      if (Platform.isAndroid) {
+        dir = Directory("/storage/emulated/0/Music");
+      } else {
+        dir = await getApplicationDocumentsDirectory();
+      }
+
+      if (!dir.existsSync()) {
+        print("❌ Failed to get storage directory");
+        return;
+      }
+
+      String filePath = "${dir.path}/$videoId.mp3";
+      print("⬇ Downloading to: $filePath");
+
+      Dio dio = Dio();
+      await dio.download(audioUrl, filePath, onReceiveProgress: (rec, total) {
+        double progress = (rec / total) * 100;
+        print("Download Progress: ${progress.toStringAsFixed(2)}%");
+      });
+
+      print("Download complete: $filePath");
+      Get.snackbar("Download Complete", "Saved at $filePath");
+    } catch (e) {
+      print(" Error downloading song: $e");
+    }
   }
 }
 

@@ -231,19 +231,46 @@ class _DetailPlayerState extends State<DetailPlayer> {
                   ),
                 ),
                 Obx(() {
-                  return IconButton(
-                    icon: Icon(
-                      navController.likedSongs.contains(currentIndex)
-                          ? Icons.favorite
-                          : Icons.favorite_border,
-                      size: 25.sp,
-                    ),
-                    onPressed: () {
-                      navController.toggelLike(currentIndex);
-                    },
-                    color: navController.likedSongs.contains(currentIndex)
-                        ? Colors.pink
-                        : Colors.red,
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          navController.likedSongs.contains(currentIndex)
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          size: 25.sp,
+                        ),
+                        onPressed: () {
+                          navController.toggelLike(currentIndex);
+                        },
+                        color: navController.likedSongs.contains(currentIndex)
+                            ? Colors.pink
+                            : Colors.red,
+                      ),
+                      SizedBox(
+                        width: 100.w,
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          widget.isYt ? Icons.download : null,
+                          size: 25.sp,
+                        ),
+                        onPressed: () {
+                          if (widget.isYt) {
+                          } else {
+                            songPlayerController
+                                .downloadTheSong(widget.song!.videoId);
+                          }
+                        },
+                        color: navController.likedSongs.contains(currentIndex)
+                            ? Colors.pink
+                            : Colors.red,
+                      ),
+                      SizedBox(
+                        width: 30.w,
+                      ),
+                    ],
                   );
                 }),
                 SizedBox(height: 5.h),
@@ -340,9 +367,11 @@ class _DetailPlayerState extends State<DetailPlayer> {
                     }),
                     SizedBox(width: 20.w),
                     IconButton(
-                      icon: Icon(Icons.skip_next,
-                          color: Get.isDarkMode ? Colors.white : Colors.black,
-                          size: 40.sp),
+                      icon: Icon(
+                        Icons.skip_next,
+                        color: Get.isDarkMode ? Colors.white : Colors.black,
+                        size: 40.sp,
+                      ),
                       onPressed: () {
                         songPlayerController.playNextSong();
                       },
