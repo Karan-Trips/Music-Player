@@ -16,7 +16,7 @@ class SearchController extends GetxController {
     try {
       isLoading.value = true;
       final results = await ytMusicService.searchSongs(query);
-      print("artist id====>${results.first.artist.artistId}");
+
       searchResults.assignAll(results);
       isLoading.value = false;
       return results;

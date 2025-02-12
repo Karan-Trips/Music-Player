@@ -98,8 +98,9 @@ class HomeScreenPlayer extends StatelessWidget {
                           } else {
                             songPlayerController.indexPlaying.value = index;
 
-                            songPlayerController.playSong(data.uri,
-                                isFromHome: true);
+                            songPlayerController.playSong(
+                              data.uri,
+                            );
                           }
                         },
                       ),

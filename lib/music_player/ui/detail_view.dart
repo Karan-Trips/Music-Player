@@ -313,22 +313,29 @@ class _DetailPlayerState extends State<DetailPlayer> {
                           color: Colors.pink,
                           shape: BoxShape.circle,
                         ),
-                        child: IconButton(
-                          icon: Icon(
-                            songPlayerController.isPlaying.value
-                                ? Icons.pause
-                                : Icons.play_arrow,
-                            color: Colors.white,
-                            size: 40.sp,
-                          ),
-                          onPressed: () {
-                            if (songPlayerController.isPlaying.value) {
-                              songPlayerController.pauseSong();
-                            } else {
-                              songPlayerController.resumeSong();
-                            }
-                          },
-                        ),
+                        child: songPlayerController.isLoading.value
+                            ? const Padding(
+                                padding: EdgeInsets.all(12.0),
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                              )
+                            : IconButton(
+                                icon: Icon(
+                                  songPlayerController.isPlaying.value
+                                      ? Icons.pause
+                                      : Icons.play_arrow,
+                                  color: Colors.white,
+                                  size: 40.sp,
+                                ),
+                                onPressed: () {
+                                  if (songPlayerController.isPlaying.value) {
+                                    songPlayerController.pauseSong();
+                                  } else {
+                                    songPlayerController.resumeSong();
+                                  }
+                                },
+                              ),
                       );
                     }),
                     SizedBox(width: 20.w),

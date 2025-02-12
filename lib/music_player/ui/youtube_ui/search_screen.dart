@@ -29,7 +29,13 @@ class _SearchScreenState extends State<SearchScreen> {
       extendBody: true,
       appBar: AppBar(
         title: TextField(
-          onChanged: (query) => searchController2.searchSongs(query),
+          onChanged: (query) {
+            if (query.isEmpty) {
+              searchController2.searchResults.clear();
+            } else {
+              searchController2.searchSongs(query);
+            }
+          },
           decoration: const InputDecoration(
             hintText: "Search Songs...",
             border: InputBorder.none,
@@ -44,18 +50,15 @@ class _SearchScreenState extends State<SearchScreen> {
       body: Obx(() {
         if (searchController2.isLoading.value) {
           return Center(
-              child: LoadingAnimationWidget.staggeredDotsWave(
-                  color: Colors.red, size: 40.sp));
+            child: LoadingAnimationWidget.staggeredDotsWave(
+              color: Colors.red,
+              size: 40.sp,
+            ),
+          );
         }
-
         if (searchController2.searchResults.isEmpty) {
-          return searchController2.searchArtists.isNotEmpty
-              ? _buildArtistGrid()
-              : Center(
-                  child: LoadingAnimationWidget.staggeredDotsWave(
-                      color: Colors.red, size: 40.sp));
+          return _buildArtistGrid();
         }
-
         return _buildSongList();
       }),
     );
@@ -75,19 +78,13 @@ class _SearchScreenState extends State<SearchScreen> {
 
         return InkWell(
           onTap: () {
-            Get.to(
-              () => ArtistSongsPage(
-                artist: artist,
-              ),
-            );
+            Get.to(() => ArtistSongsPage(artist: artist));
           },
           child: Column(
             children: [
               CircleAvatar(
                 radius: 50.r,
-                backgroundImage: NetworkImage(
-                  artist.thumbnails.last.url,
-                ),
+                backgroundImage: NetworkImage(artist.thumbnails.last.url),
               ),
               SizedBox(height: 5.h),
               Text(

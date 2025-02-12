@@ -149,8 +149,7 @@ class SongPlayerController extends GetxController {
   }
 
   /// **▶ Play a song**
-  Future<void> playSong(String? uri,
-      {bool isYt = false, bool isFromHome = false}) async {
+  Future<void> playSong(String? uri, {bool isYt = false}) async {
     if (uri == null) {
       print("❌ Invalid song URI");
       return;
@@ -169,6 +168,8 @@ class SongPlayerController extends GetxController {
       if (isYt) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           isPlaying.value = true;
+          isLoading.value = true;
+          print('isplayign value===>${isPlaying.value}');
         });
 
         print("Fetching YouTube Audio... of id ===>> $uri");
@@ -178,6 +179,9 @@ class SongPlayerController extends GetxController {
         var audioStream = manifest.audioOnly.withHighestBitrate();
         audioUrl = audioStream.url.toString();
         yt.close();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          isLoading.value = false;
+        });
 
         if (indexPlaying.value < searchController2.searchArtists.length) {
           title = searchController2.searchArtists[indexPlaying.value].name;
@@ -189,6 +193,7 @@ class SongPlayerController extends GetxController {
         if (indexPlaying.value < songList.length) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             isPlaying.value = true;
+            isLoading.value = true;
           });
           title = songList[indexPlaying.value].title;
           artist = songList[indexPlaying.value].artist!;
@@ -198,7 +203,9 @@ class SongPlayerController extends GetxController {
       }
 
       print("✅ Extracted Audio URL: $audioUrl");
-
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        isLoading.value = false;
+      });
       await audioPlayer.setAudioSource(
         AudioSource.uri(
           Uri.parse(audioUrl),
