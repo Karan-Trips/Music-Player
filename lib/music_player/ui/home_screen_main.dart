@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:yt_clone/music_player/getx_file/fetch_songs.dart';
+import 'package:yt_clone/music_player/getx_file/yt/downlaod_song.dart';
 import 'package:yt_clone/music_player/getx_file/yt/yt_search.dart';
 import 'package:yt_clone/music_player/ui/detail_view.dart';
 import 'package:yt_clone/music_player/ui/favoutire_music/favortire_scren.dart';
@@ -56,7 +57,7 @@ class _MusicHomeScreenState extends State<MusicHomeScreen> {
       searchController2.searchArtists
           .assignAll(fetchedArtists.whereType<ArtistFull>());
     } catch (e) {
-      print("❌ Error fetching artists: $e");
+      print(" Error fetching artists: $e");
     } finally {
       searchController2.isLoading.value = false;
     }
@@ -72,7 +73,7 @@ class _MusicHomeScreenState extends State<MusicHomeScreen> {
         elevation: 0,
         leading: IconButton(
           onPressed: () {
-            Get.to(() => const FavoriteSongsPage());
+            Get.to(() => const DownloadsPage());
           },
           icon: const Icon(
             Icons.favorite,

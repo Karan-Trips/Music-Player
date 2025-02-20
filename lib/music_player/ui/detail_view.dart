@@ -41,8 +41,8 @@ class _DetailPlayerState extends State<DetailPlayer> {
     super.initState();
 
     if (widget.isYt) {
-      print(
-          "id---->${searchController2.searchArtists[widget.index].topSongs[widget.index].videoId}");
+      // print(
+      //     "id---->${searchController2.searchArtists[widget.index].topSongs[widget.index].videoId}");
       songPlayerController.playSong(
         isYt: true,
         widget.isFromArtist
@@ -257,11 +257,22 @@ class _DetailPlayerState extends State<DetailPlayer> {
                           size: 25.sp,
                         ),
                         onPressed: () {
-                          if (widget.isYt) {
-                          } else {
-                            songPlayerController
-                                .downloadTheSong(widget.song!.videoId);
-                          }
+                          print("");
+
+                          songPlayerController.downloadTheSong(
+                            widget.isFromArtist
+                                ? widget.song!.videoId
+                                : searchController2
+                                    .searchResults[widget.index].videoId,
+                            widget.isFromArtist
+                                ? widget.song!.name
+                                : searchController2
+                                    .searchResults[widget.index].name,
+                            widget.isFromArtist
+                                ? widget.song!.artist.name
+                                : searchController2
+                                    .searchResults[widget.index].artist.name,
+                          );
                         },
                         color: navController.likedSongs.contains(currentIndex)
                             ? Colors.pink

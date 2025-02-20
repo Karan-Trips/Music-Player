@@ -1,6 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
@@ -11,6 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:yt_clone/music_player/getx_file/yt/yt_search.dart';
 import 'package:yt_clone/music_player/ui/home_screen_main.dart';
+import 'package:http/http.dart' as http;
 
 class SongPlayerController extends GetxController {
   late AudioPlayer audioPlayer;
@@ -96,22 +97,34 @@ class SongPlayerController extends GetxController {
 
   Future<void> checkPermissionAndFetchSongs() async {
     try {
-      var status = await Permission.storage.status;
-      if (!status.isGranted) {
-        status = await Permission.storage.request();
+      bool permissionGranted = false;
+
+      if (Platform.isAndroid) {
+        var storageStatus = await Permission.storage.status;
+        if (!storageStatus.isGranted) {
+          storageStatus = await Permission.storage.request();
+        }
+
+        var audioStatus = await Permission.audio.status;
+        if (!audioStatus.isGranted) {
+          audioStatus = await Permission.audio.request();
+        }
+
+        if (storageStatus.isGranted || audioStatus.isGranted) {
+          permissionGranted = true;
+        }
+      } else if (Platform.isIOS) {
+        var mediaStatus = await Permission.mediaLibrary.status;
+        if (!mediaStatus.isGranted) {
+          mediaStatus = await Permission.mediaLibrary.request();
+        }
+
+        if (mediaStatus.isGranted) {
+          permissionGranted = true;
+        }
       }
 
-      var audioStatus = await Permission.audio.status;
-      if (!audioStatus.isGranted) {
-        audioStatus = await Permission.audio.request();
-      }
-
-      var mediaStatus = await Permission.mediaLibrary.status;
-      if (!mediaStatus.isGranted) {
-        mediaStatus = await Permission.mediaLibrary.request();
-      }
-
-      if (status.isGranted || audioStatus.isGranted || mediaStatus.isGranted) {
+      if (permissionGranted) {
         isLoading.value = true;
         print("✅ Permission granted!");
         await fetchSongs();
@@ -149,7 +162,7 @@ class SongPlayerController extends GetxController {
   }
 
   Future<void> playSong(String? uri, {bool isYt = false}) async {
-    if (uri == null) {
+    if (uri == null || uri.isEmpty) {
       print("❌ Invalid song URI");
       return;
     }
@@ -163,30 +176,66 @@ class SongPlayerController extends GetxController {
       String title = "Unknown Song";
       String artist = "Unknown Artist";
       String album = "YT Clone";
-      String thumbnailUrl = "";
+      String? thumbnailUrl;
+      bool isLocalFile = false;
+
+      // Check if it's a downloaded file
+      if (!isYt && File(uri).existsSync()) {
+        isLocalFile = true;
+        print("🎵 Playing from Downloads: $uri");
+      }
+
       if (isYt) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           isPlaying.value = true;
           isLoading.value = true;
-          print('isplayign value===>${isPlaying.value}');
         });
 
-        print("Fetching YouTube Audio... of id ===>> $uri");
+        print("Fetching YouTube Audio... for ID: $uri");
 
         var yt = YoutubeExplode();
         var manifest = await yt.videos.streamsClient.getManifest(uri);
         var audioStream = manifest.audioOnly.withHighestBitrate();
-        audioUrl = audioStream.url.toString();
+
+        if (audioStream != null) {
+          audioUrl = audioStream.url.toString();
+        } else {
+          print("❌ No valid audio stream found.");
+          return;
+        }
+
         yt.close();
         WidgetsBinding.instance.addPostFrameCallback((_) {
           isLoading.value = false;
         });
 
         if (indexPlaying.value < searchController2.searchArtists.length) {
-          title = searchController2.searchArtists[indexPlaying.value].name;
-          artist = searchController2.searchArtists[indexPlaying.value].name;
-          thumbnailUrl = searchController2
-              .searchArtists[indexPlaying.value].thumbnails.last.url;
+          var songData = searchController2.searchArtists[indexPlaying.value];
+          title = songData.name ?? "Unknown Title";
+          artist = songData.name ?? "Unknown Artist";
+          thumbnailUrl = songData.thumbnails.isNotEmpty
+              ? songData.thumbnails.last.url
+              : null;
+        }
+      } else if (isLocalFile) {
+        // Extract metadata from file path
+        String fileName = uri.split('/').last;
+        List<String> nameParts = fileName.replaceAll('.mp3', '').split(' - ');
+
+        if (nameParts.length == 2) {
+          artist = nameParts[0];
+          title = nameParts[1];
+        } else {
+          title = fileName.replaceAll('.mp3', '');
+        }
+
+        // Set thumbnail path
+        String thumbnailPath = uri
+            .replaceAll('/Music/', '/Music/.thumbnail/')
+            .replaceAll('.mp3', '.jpg');
+
+        if (File(thumbnailPath).existsSync()) {
+          thumbnailUrl = thumbnailPath;
         }
       } else {
         if (indexPlaying.value < songList.length) {
@@ -194,34 +243,48 @@ class SongPlayerController extends GetxController {
             isPlaying.value = true;
             isLoading.value = true;
           });
-          title = songList[indexPlaying.value].title;
-          artist = songList[indexPlaying.value].artist!;
+
+          var localSong = songList[indexPlaying.value];
+          title =
+              localSong.title.isNotEmpty ? localSong.title : "Unknown Title";
+          artist = localSong.artist?.isNotEmpty == true
+              ? localSong.artist!
+              : "Unknown Artist";
           audioUrl = uri;
-          songIndex.value = indexPlaying.value;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            songIndex.value = indexPlaying.value;
+          });
         }
       }
 
-      print("✅ Extracted Audio URL: $audioUrl");
+      print("✅ Playing: $title by $artist");
+      print("🎵 Audio URL: $audioUrl");
+
       WidgetsBinding.instance.addPostFrameCallback((_) {
         isLoading.value = false;
       });
+
       await audioPlayer.setAudioSource(
-        AudioSource.uri(
-          Uri.parse(audioUrl),
-          tag: MediaItem(
-            id: uri,
-            album: album,
-            title: title,
-            artist: artist,
-            artUri: thumbnailUrl.isNotEmpty ? Uri.tryParse(thumbnailUrl) : null,
-          ),
-        ),
+        isLocalFile
+            ? AudioSource.uri(Uri.file(audioUrl))
+            : AudioSource.uri(
+                Uri.parse(audioUrl),
+                tag: MediaItem(
+                  id: uri,
+                  album: album,
+                  title: title,
+                  artist: artist,
+                  artUri:
+                      thumbnailUrl != null ? Uri.tryParse(thumbnailUrl) : null,
+                ),
+              ),
       );
 
       await audioPlayer.play();
       update();
-    } catch (e) {
+    } catch (e, stacktrace) {
       print("❌ Error playing song: $e");
+      print(stacktrace);
     }
   }
 
@@ -264,17 +327,19 @@ class SongPlayerController extends GetxController {
     volume.value = scaledVolume;
   }
 
-  Future<void> downloadTheSong(String videoId) async {
+  Future<void> downloadTheSong(
+      String videoId, String title, String artist) async {
     try {
       var yt = YoutubeExplode();
-      Directory? dir;
+      var video = await yt.videos.get(videoId);
       var manifest = await yt.videos.streamsClient.getManifest(videoId);
       var audioStream = manifest.audioOnly.withHighestBitrate();
-      String audioUrl = audioStream.url.toString();
-      yt.close();
 
+      String thumbnailUrl = video.thumbnails.highResUrl;
+
+      Directory? dir;
       if (Platform.isAndroid) {
-        dir = Directory("/storage/emulated/0/Music");
+        dir = Directory("/storage/emulated/0/Download");
       } else {
         dir = await getApplicationDocumentsDirectory();
       }
@@ -284,20 +349,116 @@ class SongPlayerController extends GetxController {
         return;
       }
 
-      String filePath = "${dir.path}/$videoId.mp3";
-      print("⬇ Downloading to: $filePath");
+      String safeTitle = title.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_');
+      String safeArtist = artist.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_');
 
-      Dio dio = Dio();
-      await dio.download(audioUrl, filePath, onReceiveProgress: (rec, total) {
-        double progress = (rec / total) * 100;
-        print("Download Progress: ${progress.toStringAsFixed(2)}%");
-      });
+      String audioFilePath = "${dir.path}/$safeArtist - $safeTitle.mp3";
+      String thumbnailFilePath = "${dir.path}/$safeArtist - $safeTitle.jpg";
+      String metadataFilePath = "${dir.path}/$safeArtist - $safeTitle.json";
 
-      print("Download complete: $filePath");
-      Get.snackbar("Download Complete", "Saved at $filePath");
+      print("⬇ Downloading audio to: $audioFilePath");
+
+      var audioFile = File(audioFilePath);
+      var output = audioFile.openWrite();
+
+      var stream = yt.videos.streamsClient.get(audioStream);
+      int totalBytes = 0;
+      int totalSize = audioStream.size.totalBytes;
+      int lastPrintedProgress = 0;
+
+      RxDouble progressValue = 0.0.obs;
+      Get.dialog(
+        Obx(() {
+          print('progressValue_value===>${progressValue.value}');
+          return AlertDialog(
+            title: const Text("Downloading..."),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                    "Progress: ${(progressValue.value * 100).toStringAsFixed(1)}%"),
+                const SizedBox(height: 10),
+                LinearProgressIndicator(value: progressValue.value),
+              ],
+            ),
+          );
+        }),
+        barrierDismissible: false,
+      );
+
+      await for (final chunk in stream) {
+        totalBytes += chunk.length;
+        output.add(chunk);
+
+        double progress = totalBytes / totalSize;
+        if ((progress * 100).toInt() - lastPrintedProgress >= 1) {
+          lastPrintedProgress = (progress * 100).toInt();
+          progressValue.value = progress;
+        }
+      }
+
+      await output.close();
+
+      await downloadThumbnail(thumbnailUrl, thumbnailFilePath);
+
+      await saveMetadata(
+          metadataFilePath, title, artist, thumbnailFilePath, audioFilePath);
+
+      yt.close();
+      Get.back();
+
+      print("✅ Download complete: $audioFilePath");
+
+      Get.snackbar(
+        "Download Complete ✅",
+        "Saved as $safeArtist - $safeTitle.mp3",
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 5),
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } catch (e) {
-      print(" Error downloading song: $e");
+      print("❌ Error downloading song: $e");
+
+      Get.back();
+
+      Get.snackbar(
+        "Download Failed ❌",
+        "Error: $e",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 5),
+      );
     }
+  }
+
+  Future<void> downloadThumbnail(String url, String filePath) async {
+    try {
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        File file = File(filePath);
+        await file.writeAsBytes(response.bodyBytes);
+        print("✅ Thumbnail saved: $filePath");
+      } else {
+        print("❌ Failed to download thumbnail.");
+      }
+    } catch (e) {
+      print("❌ Error downloading thumbnail: $e");
+    }
+  }
+
+  Future<void> saveMetadata(String filePath, String title, String artist,
+      String thumbnailPath, String audioPath) async {
+    Map<String, String> metadata = {
+      "title": title,
+      "artist": artist,
+      "thumbnail": thumbnailPath,
+      "audioFile": audioPath,
+    };
+
+    File file = File(filePath);
+    await file.writeAsString(jsonEncode(metadata));
+    print("✅ Metadata saved: $filePath");
   }
 }
 

@@ -61,7 +61,7 @@ class HomeScreenPlayer extends StatelessWidget {
                       subtitle: Text(
                         data.artist == '<unknown>'
                             ? 'Unknown Artist'
-                            : data.artist!,
+                            : data.artist ?? '',
                         style: TextStyle(
                           color:
                               Get.isDarkMode ? Colors.white70 : Colors.black87,
