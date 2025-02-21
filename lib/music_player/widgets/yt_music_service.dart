@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'package:dart_ytmusic_api/types.dart';
 import 'package:dart_ytmusic_api/yt_music.dart';
 
@@ -10,9 +8,8 @@ class YTMusicService {
   final YTMusic _ytmusic = YTMusic();
   bool _isInitialized = false;
 
-  YTMusicService._internal(); // Private constructor for singleton
+  YTMusicService._internal();
 
-  /// Initializes the YTMusic API once
   Future<void> initialize() async {
     if (_isInitialized) return;
     try {
@@ -24,7 +21,6 @@ class YTMusicService {
     }
   }
 
-  /// Searches for songs based on a query
   Future<List<SongDetailed>> searchSongs(String query) async {
     try {
       return await _ytmusic.searchSongs(query);
@@ -34,7 +30,6 @@ class YTMusicService {
     }
   }
 
-  /// Fetches artist details by ID
   Future<ArtistFull?> showArtist(String artistId) async {
     try {
       final artist = await _ytmusic.getArtist(artistId);
@@ -48,7 +43,6 @@ class YTMusicService {
     }
   }
 
-  /// Fetches an artist's top singles (Albums)
   Future<List<AlbumDetailed>> showArtistTopSingles(String artistId) async {
     try {
       return await _ytmusic.getArtistSingles(artistId);
@@ -58,7 +52,15 @@ class YTMusicService {
     }
   }
 
-  /// Fetches songs from an artist's playlist
+  Future<List<HomeSection>> getHomeScreen() async {
+    try {
+      return await _ytmusic.getHomeSections();
+    } catch (e) {
+      print("❌ YTMusic API Error [homeswcreen]  $e");
+      return [];
+    }
+  }
+
   Future<List<SongDetailed>> getPlaylistSongs(String playlistId) async {
     try {
       return await _ytmusic.getArtistSongs(playlistId);
@@ -68,7 +70,6 @@ class YTMusicService {
     }
   }
 
-  /// Fetches an album by its ID
   Future<AlbumFull?> getAlbum(String albumId) async {
     try {
       return await _ytmusic.getAlbum(albumId);
@@ -78,7 +79,6 @@ class YTMusicService {
     }
   }
 
-  /// Fetches song details by video ID
   Future<SongFull?> getSongDetails(String videoId) async {
     try {
       return await _ytmusic.getSong(videoId);
@@ -87,7 +87,15 @@ class YTMusicService {
       return null;
     }
   }
+
+  Future<PlaylistFull?> playlistDetails(String videoId) async {
+    try {
+      return await _ytmusic.getPlaylist(videoId);
+    } catch (e) {
+      print("❌ YTMusic API Error for $videoId: $e");
+      return null;
+    }
+  }
 }
 
-// ✅ Singleton Instance
 final YTMusicService ytMusicService = YTMusicService();

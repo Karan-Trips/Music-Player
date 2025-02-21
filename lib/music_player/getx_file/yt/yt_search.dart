@@ -50,6 +50,16 @@ class SearchController extends GetxController {
       return null;
     }
   }
+
+  // Future<List<HomeSection>> getHomeScreen() async {
+  //   try {
+  //     final artist = await ytMusicService.getHomeScreen();
+  //     return artist;
+  //   } catch (e) {
+  //     print("❌ Error fetching artist details: $e");
+  //     return [];
+  //   }
+  // }
 }
 
 final SearchController searchController2 = Get.put(SearchController());

@@ -1,3 +1,4 @@
+import 'package:dart_ytmusic_api/types.dart';
 import 'package:dart_ytmusic_api/yt_music.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -39,9 +40,6 @@ class _MusicHomeScreenState extends State<MusicHomeScreen> {
     songPlayerController.checkPermissionAndFetchSongs();
 
     print('------------------------------------------------');
-    // for (var i = 0; i < defaultArtistNames.length; i++) {
-    //   getArtistSingles(ytMusic, defaultArtistNames[i]);
-    // }
 
     searchController2.fetchDefaultArtists(defaultArtistNames);
   }

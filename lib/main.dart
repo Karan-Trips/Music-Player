@@ -11,16 +11,16 @@ import 'package:yt_clone/music_player/getx_file/fetch_songs.dart';
 
 import 'package:yt_clone/music_player/ui/home_screen_main.dart';
 import 'package:yt_clone/music_player/widgets/yt_music_service.dart';
-
 import 'music_player/hive/app_db.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppDB.init();
+
   Get.put(AppDB());
   Get.lazyPut(() => SongPlayerController(), fenix: true);
   await ytMusicService.initialize();
-  // TODO:Under Develpment
+
   await JustAudioBackground.init(
     androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
     androidNotificationChannelName: 'Audio playback',
@@ -28,7 +28,7 @@ Future<void> main() async {
   );
   final session = await AudioSession.instance;
   await session.configure(const AudioSessionConfiguration.music());
-  // TODO:Under Develpment
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
