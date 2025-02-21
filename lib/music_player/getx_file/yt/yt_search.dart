@@ -1,54 +1,53 @@
 import 'package:dart_ytmusic_api/types.dart';
 import 'package:get/get.dart';
-
 import '../../widgets/yt_music_service.dart';
 
 class SearchController extends GetxController {
   var isLoading = false.obs;
-  var searchResults = <SongDetailed>[].obs;
-  var searchArtists = <ArtistFull>[].obs;
+  RxList searchResults = <SongDetailed>[].obs;
+  RxList searchArtists = <ArtistFull>[].obs;
 
-  Future<List<SongDetailed>> searchSongs(String query) async {
+  Future<void> searchSongs(String query) async {
     if (query.isEmpty) {
       searchResults.clear();
-      return [];
+      return;
     }
     try {
       isLoading.value = true;
       final results = await ytMusicService.searchSongs(query);
-
       searchResults.assignAll(results);
-      isLoading.value = false;
-      return results;
     } catch (e) {
-      print("Error fetching search results: $e");
-      return [];
-    } finally {
-      isLoading.value = false;
+      print("❌ Error fetching search results: $e");
     }
   }
 
-  Future<ArtistFull?> fetchArtist(String query) async {
+  Future<void> fetchDefaultArtists(List<String> artistIds) async {
     try {
-      isLoading.value = true;
+      final fetchedArtists = await Future.wait(
+        artistIds.map((id) async {
+          try {
+            return await ytMusicService.showArtist(id);
+          } catch (e) {
+            print("⚠️ Error fetching artist $id: $e");
+            return null;
+          }
+        }),
+      );
 
-      final result = await ytMusicService.showArtist(query);
-      isLoading.value = false;
+      final validArtists = fetchedArtists.whereType<ArtistFull>().toList();
+      searchArtists.assignAll(validArtists);
+    } catch (e) {
+      print("❌ Error fetching multiple artists: $e");
+    }
+  }
 
-      if (result != null && result.thumbnails.isNotEmpty) {
-        return result;
-      } else {
-        print("⚠️ No data found for artist: $query");
-        isLoading.value = false;
-        return null;
-      }
+  Future<ArtistFull?> fetchArtist(String artistId) async {
+    try {
+      final artist = await ytMusicService.showArtist(artistId);
+      return artist;
     } catch (e) {
       print("❌ Error fetching artist details: $e");
       return null;
-    } finally {
-      if (isLoading.value) {
-        isLoading.value = false;
-      }
     }
   }
 }

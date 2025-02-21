@@ -1,7 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 class DownloadsPage extends StatefulWidget {
@@ -20,18 +18,9 @@ class _DownloadsPageState extends State<DownloadsPage> {
   @override
   void initState() {
     super.initState();
-    // _requestPermissions();
+
     _loadDownloadedFiles();
   }
-
-  // Future<void> _requestPermissions() async {
-  //   if (await Permission.storage.request().isGranted) {
-  //     _loadDownloadedFiles();
-  //   } else {
-  //     Get.snackbar(
-  //         "Permission Denied", "Storage access is needed to show downloads");
-  //   }
-  // }
 
   void _loadDownloadedFiles() {
     final dir = Directory(musicDir);

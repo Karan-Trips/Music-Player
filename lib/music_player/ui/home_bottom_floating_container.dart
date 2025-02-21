@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -25,9 +27,20 @@ class _HomeBottomPlayerState extends State<HomeBottomPlayer> {
   ];
 
   final List<int> duration = [900, 1000, 600, 800, 500];
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      final isValidIndex = songPlayerController.songList.isNotEmpty &&
+          songPlayerController.indexPlaying.value >= 0 &&
+          songPlayerController.indexPlaying.value <
+              songPlayerController.songList.length;
+
+      final currentSong = isValidIndex
+          ? songPlayerController
+              .songList[songPlayerController.indexPlaying.value]
+          : null;
+
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.0.h),
         child: ClipRect(
@@ -51,8 +64,7 @@ class _HomeBottomPlayerState extends State<HomeBottomPlayer> {
                       artworkWidth: 50.w,
                       artworkQuality: FilterQuality.high,
                       artworkBorder: BorderRadius.circular(10.r),
-                      id: songPlayerController
-                          .songList[songPlayerController.indexPlaying.value].id,
+                      id: isValidIndex ? currentSong!.id : 0,
                       type: ArtworkType.AUDIO,
                       nullArtworkWidget: Container(
                         height: 40.h,
@@ -76,11 +88,8 @@ class _HomeBottomPlayerState extends State<HomeBottomPlayer> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          songPlayerController.songList.isNotEmpty
-                              ? songPlayerController
-                                  .songList[
-                                      songPlayerController.indexPlaying.value]
-                                  .displayName
+                          isValidIndex
+                              ? currentSong!.displayName
                               : 'No song playing',
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
